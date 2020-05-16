@@ -1,0 +1,55 @@
+.sidebar {
+    background: white; 
+    min-width: 300px;
+    transition: min-width;
+    transition-duration: .4s;
+    transition-timing-function: ease;
+    display: flex;
+    position: relative;
+}    
+
+.sidebar.sidebarclose {
+    min-width: 0px;
+}
+
+.sidebar .sidebarcontent {
+    position: absolute;
+    width: 300px;
+    height: 100%;
+    flex: auto;
+    transition: left; 
+    transition-duration: .4s;
+    transition-timing-function: ease;
+    overflow: auto;
+    left: 0px;
+    border-right: 1px solid #bbb;
+    padding: 10px;
+}
+
+.sidebar.sidebarclose .sidebarcontent {
+    left: -300px;
+}
+
+.sidebar .tab {
+    z-index: 100;
+    position: absolute;
+    right: -32px;
+    top: 20px;
+    line-height: 1em;
+}
+
+.sidebar .tab button {
+    border-left: none;
+    border-radius: 0px;
+    background: white;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+.sidebar .tab button:hover {
+    background: white;
+}
+
+.sidebar .tab button:active {
+    background: white;
+}

@@ -1,0 +1,13 @@
+.sidebarsection {
+    margin-bottom: 10px;
+}
+
+.sidebarsectionheader {
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+
+.sidebar .sidebarsection:nth-child(odd) {
+    border-bottom: 1px solid #bbb;
+}
