@@ -1,8 +1,10 @@
 import React, {useState, useEffect} from "react";
 import SidebarSection from "../sidebarsection/sidebarsection";
 //import DegreeSequences from "../degreesequences/degreesequences";
-//import GraphProperties from "../graphproperties/graphproperties";
-//import $ from "jquery";
+import GraphVertexAndEdgeProperties from "../graphproperties/graphvertexandedgeproperties";
+import GraphProfileProperties from "../graphproperties/graphprofileproperties";
+
+
 import "./sidebar.css";
 
 function Sidebar(props) {
@@ -11,9 +13,7 @@ function Sidebar(props) {
     let iconClasses = (_state.bclose) ? "glyphicon glyphicon-menu-right" : "glyphicon glyphicon-menu-left";
     let sidebarClasses = (_state.bclose) ? "sidebarclose" : "";  
     useEffect(()=>{ 
-       // $(".sidebar").on("transitionend", function(e){ 
-        //    $(window).resize();
-      //  });
+        window.dispatchEvent(new Event("resize"));
     }, [_state.bclose]);
     return (
         <aside className={`sidebar ${sidebarClasses}`}>
@@ -22,14 +22,10 @@ function Sidebar(props) {
             </div>        
             <div className="sidebarcontent">
                 <SidebarSection headerName="Graph Properties">
-                   {
-                    //<GraphProperties />
-                   }
+                    <GraphVertexAndEdgeProperties />
                 </SidebarSection>
-                <SidebarSection headerName="Degree Sequences">
-                    {
-                    //<DegreeSequences/>
-                    }
+                <SidebarSection headerName="Profile Sequences">
+                    <GraphProfileProperties />
                 </SidebarSection>
             </div>
         </aside>
