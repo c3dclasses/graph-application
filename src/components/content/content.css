@@ -1,0 +1,46 @@
+.content {
+    width: 100%;
+    height: 100%;
+}
+
+.content .graph-content {
+    flex: auto;
+    position: relative;
+    background: none;
+    width: 100%;
+    height: 100%;
+    transition: height; 
+    transition-duration: .4s;
+    transition-timing-function: ease;
+}
+
+.content .graph-content.show-charts {
+    height: calc(100% - 300px);
+}
+
+.content .charts-content {
+    position: relative;
+    height: 300px;
+    width: 100%;
+    border-top: 1px solid #bbb;
+    background-color: white;
+    top:300px;
+    transition: top; 
+    transition-duration: .4s;
+    transition-timing-function: ease;
+}
+
+.content .charts-content.show-charts {
+    top:0;
+}
+
+
+.content .charts-content .close-btn {
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin: 10px;
+    font-size: 15px;
+    z-index: 1000; 
+}
+

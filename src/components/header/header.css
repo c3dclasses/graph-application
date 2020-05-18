@@ -1,0 +1,27 @@
+.header {
+	height: 50px;
+	width:100%;
+	padding: 10px;
+	border-bottom: 1px solid #bbb;
+	background-color: white;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+.graph-controls {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	flex: 1;
+}
+
+.logo h1 {
+	margin-right: .6em;
+	font-weight: 700
+}
+
+.logo {
+	margin-right: 50px;
+}

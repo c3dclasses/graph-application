@@ -1,0 +1,62 @@
+/*
+.grid-ops, 
+.save-ops, 
+.open-ops, 
+.er-ops, 
+.graph-ops {
+    display: none;
+    line-height: 18px;
+}
+*/
+
+.toggleGridLayout .grid-ops, 
+.save .save-ops, 
+.open .open-ops, 
+.er .er-ops, 
+.graphs .graph-ops {
+    display: block;
+}
+
+.grid-ops span {
+    color: green;
+}
+
+.graph-options {
+    float: right;
+}
+
+.graph-operations select, .graph-operations input
+.graph-options select, .graph-options input {
+    width: 65px;
+    font-size: 9px;
+}
+
+.erdos-renyi {
+    display: block;
+    float: none;
+}
+
+.reset {
+    clear: both;
+}
+
+.erdos-renyi .input-group {
+    margin-bottom: 10px; 
+
+}
+
+.generate {
+    float: right;
+}
+
+#myDiv {
+    height: 200px;
+}
+
+.graph-operations .op1 {
+    margin-right: 10px;
+} 
+
+.graph-operations .op2 {
+    margin-right: 10px;
+} 

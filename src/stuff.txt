@@ -1,0 +1,509 @@
+	/////////////////////////////////
+	// other
+
+	/*
+		//this.m_bshowelabel = false;
+		//this.m_bshowvletters = false;
+		this.m_bshowvdegree = false;
+		this.m_bshowgrid = false;
+		this.m_ngridrows = 3;
+		this.m_ngridcols = 3;
+		this.m_gridpadding = 20;
+		this.m_gridwidth = 1;
+		this.m_gridheight = 1;
+		this.m_gridcolor = "#5e5e5e";
+		*/
+
+	/*
+	getGridCellPosFromPos(p) {		
+		return this.m_cgraphics.getGridRowColPosFromPos(p.x, p.y, this.m_ngridrows, this.m_ngridcols, this.m_gridpadding, true);
+	}
+
+	toggleGridLayout() {
+		this.m_bshowgrid = !this.m_bshowgrid;
+		this.draw();
+		return this.m_bshowgrid;
+	}
+
+	getGridRowColPos(irow, icol, bcenter) {
+		return this.m_cgraphics.getGridRowColPos(
+			irow,
+			icol,
+			this.m_ngridrows,
+			this.m_ngridcols,
+			this.m_gridpadding,
+			bcenter);
+	}
+	
+	getGridCellPos(i, bcenter) {
+		let icol = i%this.m_ngridcols;
+		let irow = Math.floor(i/this.m_ngridcols);
+		return this.getGridRowColPos(irow, icol, bcenter);
+	}
+	
+	computeDegreeSequences() {
+		let vertices = this.getVertices();
+		if(vertices)
+			for(let v in vertices)
+				vertices[v].computeDegreeSequences();
+		this.m_deg = this.getDegreeSequence("m_deg");
+		this.m_imin = this.getDegreeSequence("m_imin");
+		this.m_imax = this.getDegreeSequence("m_imax");
+		this.m_emin = this.getDegreeSequence("m_emin");
+		this.m_emax = this.getDegreeSequence("m_emax");
+		return {deg:this.m_deg, imin:this.m_imin, imax:this.m_imax, emin:this.m_emin, emax:this.m_emax};
+	} // end computeDegreeSequences()
+
+	degreeSequenceToString(seqname, bshort) {
+		let str = "";
+		let seqs = this[seqname];
+		if(!seqs)
+			return "";
+		let degrees = Object.keys(seqs).sort(function(a,b){return b-a});
+		for(let i=0; i<degrees.length; i++) {
+			let degree = degrees[i];
+			let degreecount = seqs[degree];
+			if(bshort)
+				str += degree + "<sup>" + degreecount + "</sup>";
+			else {
+				for(let j=0; j<degreecount; j++) {
+					str += degree;
+					if(j < degreecount-1)
+						str += " ";
+				} // end for
+			} // end else
+			if(i < degrees.length-1)
+				str += " ";
+		} // end for
+		return str;
+	} // end degreeSequenceToString()
+
+	getDegreeSequence(seqname) {
+		let vertices = this.getVertices();
+		if(!vertices)
+			return null;
+		let sequences = {};
+		for(let v in vertices) {
+			let seq	= vertices[v][seqname];
+			if(!sequences[seq])
+				sequences[seq]=1;
+			else sequences[seq]++;
+		} // end for
+		let arrsequences = [];
+		for(let seq in sequences) 
+			arrsequences.push({degree:seq,count:sequences[seq]});
+		return arrsequences;
+	} // end getDegreeSequence()
+
+	layoutVerticesInCircle() {
+		let d = this.m_cgraphics.getWidthHeight();
+		let vertices = this.getVertices();
+		if(vertices == null)
+			return;
+		let indices = this.getVertexIndices();
+		if(indices == null)
+			return;
+		let cx = d.width * 0.5;
+		let cy = d.height * 0.5;
+		let rx = cx * 0.8;
+		let ry = cy * 0.8;
+		let nsteps = indices.length;
+		let invnsteps = 1/nsteps;		
+		for(let i=0; i<nsteps; i++) {
+			let theta = 2*Math.PI*(i*invnsteps);
+			let v = indices[i];
+			let data = vertices[v].getData();
+			let x = cx + (rx * Math.cos(theta));
+			let y = cy + (ry * Math.sin(theta));
+			data.setPos(x,y);
+		} // end for
+	} // end arrangeInCircle()
+
+	layoutVerticesInGrid() {
+		let vertices = this.getVertices();
+		if(vertices == null)
+			return;
+		let indices = this.getVertexIndices();
+		for(var i=0; i<indices.length; i++) {
+			let pos = this.getGridCellPos(i,true); 
+			if(pos) {
+				let vd = vertices[indices[i]].getData();
+				vd.setPos(pos.x, pos.y);
+			}
+		}
+	}
+
+	// runs the ER algorithm to produce a random graph
+	doER(vertexcount, probability) {
+		try {
+			vertexcount = parseInt(vertexcount);
+			probability = parseFloat(probability);
+		}
+		catch(e) {
+			return;
+		}
+
+		if(vertexcount===0 || probability<0)
+			return;
+		
+		this.clear();
+		for(let i=0; i<vertexcount; i++) {
+			let cgraphvertex = this.addVertexAtRandomClientPos(i+"");
+			cgraphvertex.draw = CGraphicsGraphVertex.draw.bind(cgraphvertex);
+			cgraphvertex.computeDegreeSequences = CGraphicsGraphVertex.computeDegreeSequences.bind(cgraphvertex);	
+		} // end for
+		let indices = this.getVertexIndices();
+		for(let i=0; i<indices.length; i++) {
+			for(let j=i+1; j<indices.length; j++) {
+				if(Math.random() <= probability)
+					this.addMultiEdge(indices[i],indices[j]);
+			} // end for
+		} // end for
+	} // end ER()
+
+	// runs trails of ER generated graphs for a given profile
+	doERTrails({vertexcount, probability, trails, profile}) {
+		try {
+			vertexcount = parseInt(vertexcount);
+			probability = parseFloat(probability);
+			trails = parseInt(trails);
+		}
+		catch(e) {
+			return null;
+		}
+
+		if(trails <= 0 || profile === "")
+			return null;
+
+		let histograms = [];
+		let avghistogram = {};
+		let minhistogram = {};
+		let maxhistogram = {};
+		let error = [];
+		let seqlength = 0;
+		
+		for(let i=0; i<trails; i++) {
+			this.doER(vertexcount, probability);
+			let sequences = this.computeDegreeSequences();
+			if(!sequences || !sequences[profile])
+				continue;
+			sequences = sequences[profile];
+			seqlength += sequences.length;
+			let histogram = {};
+			for(let d=0; d<vertexcount; d++)
+				histogram[d] = 0;
+			for(let j=0; j<sequences.length; j++) {
+				if(!sequences[j])
+					continue;	
+				let s = sequences[j];
+				// min
+				if(!minhistogram[""+s.degree])
+					minhistogram[""+s.degree] = s.count;
+				else if(minhistogram[""+s.degree] > s.count)
+					minhistogram[""+s.degree] = s.count;
+				// max
+				if(!maxhistogram[""+s.degree])
+					maxhistogram[""+s.degree] = s.count;
+				else if(maxhistogram[""+s.degree] < s.count)
+					maxhistogram[""+s.degree] = s.count;
+				// avg
+				if(!avghistogram[""+s.degree]) 
+					avghistogram[""+s.degree] = 0;
+				avghistogram[""+s.degree] += s.count;
+				// ith histogram
+				histogram[""+s.degree] = s.count;
+			} // end for
+			histograms.push(histogram);
+		} // end
+
+		let highestvertexcount = 0;
+		for(let d=0; d<vertexcount; d++) {
+			minhistogram[d] = (!minhistogram[d]) ? 0 : minhistogram[d];
+			maxhistogram[d] = (!maxhistogram[d]) ? 0 : maxhistogram[d];
+			avghistogram[d] = (!avghistogram[d]) ? 0 : (minhistogram[d] + maxhistogram[d]) * 0.5;
+			error.push((maxhistogram[d] - minhistogram[d])*0.5); 
+			if(avghistogram[d] > highestvertexcount)
+				highestvertexcount = avghistogram[d]; 
+		}
+
+		seqlength /= trails;
+
+		return {
+			avghistogram: avghistogram,
+			maxhistogram: maxhistogram,
+			minhistogram: minhistogram,
+			histograms: histograms,
+			error: error,
+			vertexcount: vertexcount,
+			probability: probability,
+			probability1: probability,
+			probability2: probability,
+			trails: trails,
+			highestvertexcount: highestvertexcount,
+			sequencelength: seqlength
+		};
+	}
+
+	// runs ER model over a range of probability checking the following
+	// min, max, and avg vertex count
+	// min, max, and avg profile sequnece length
+	doERTrailsOverProbabilities({vertexcount,probability1,probability2,probabilitystep,trails,profile}) {
+		try {
+			vertexcount = parseInt(vertexcount);
+			trails = parseInt(trails);
+			probability1 = parseFloat(probability1);
+			probability2 = parseFloat(probability2);
+			probabilitystep = parseFloat(probabilitystep);
+		}
+		catch(e) {
+			return null;
+		}
+		
+		if(probability1>probability2 || probabilitystep <= 0.0)
+			return null;
+		
+		let data = {
+			vertexcount:vertexcount,
+			probability:probability1,
+			probability1:probability1,
+			probability2:probability2,
+			probabilitystep: probabilitystep,
+			trails: trails,
+			profile: profile
+		};
+		let probabilitiesoverx = [];
+		let highestvertexcount = [];	
+		let sequencelength = [];	
+		for(let probability=probability1; probability<=probability2; probability+=probabilitystep) {
+			let data = this.doERTrails({vertexcount,probability,trails,profile});
+			highestvertexcount.push(data.highestvertexcount);
+			sequencelength.push(data.sequencelength);
+			probabilitiesoverx.push(probability);
+		} // end for
+		data.probabilitiesoverx = probabilitiesoverx;
+		data.highestvertexcount = highestvertexcount;
+		data.sequencelength = sequencelength;
+		return data;
+	}
+	*/
+	/*
+	ERX({vertexcount, probability1, probability2, probabilitystep, trails,  profile, bshow, bshowponx}) {
+		// just produce the graph
+		if(!bshow) {
+			this.ER(vertexcount,probability1);
+			this.triggerUpdate();
+			return;
+		}
+
+		// produce the graph with chart data
+		let data;
+		if(!bshowponx) {
+			data = this.ER_Trails({vertexcount, probability1, trails, profile});
+			data.bshow = bshow;
+			//this.triggerUpdateCharts(data);
+			this.triggerUpdate();
+			return;
+		}
+
+		// produce the graph and chart data with prob on x axis
+		data = this.ER_TrailsX({vertexcount, probability1, probability2, probabilitystep, trails, profile});
+		data.bshow = bshow;
+		data.bshowponx = bshowponx;
+		//this.triggerUpdateCharts(data);
+		this.triggerUpdate();
+		return;
+	} // end ERX
+	*/
+
+	/*
+	updateVertices(vertices) {
+		let nvertices={};
+		let bupdate = false;
+		for(let i=0; i < vertices.length; i++)
+			nvertices[vertices[i]]=vertices[i];
+		let overtices = this.getVertices()		
+		for(let v in overtices)
+			if(!nvertices[v]) {
+				this.removeVertex2(v);
+				bupdate = true;
+			}
+		for(let vert in nvertices) {
+			let v = vert.trim();
+			if(v !== "" && v !== null)
+			if(!overtices[v+""]) {
+				let cgraphvertex = this.addVertexAtRandomClientPos(v);
+				cgraphvertex.draw = CGraphicsGraphVertex.draw.bind(cgraphvertex);
+				cgraphvertex.computeDegreeSequences = CGraphicsGraphVertex.computeDegreeSequences.bind(cgraphvertex);
+				bupdate = true;		
+			} // end for
+		}
+		return bupdate;
+	} // end updateVertices()
+
+	updateEdges(nedges) {
+		if(!nedges) {
+			this.removeAllEdges();
+			return true;
+		} // end if
+		let oedges = this.getEdges();
+		let bupdate = false;
+		for(let v1 in oedges)
+			for(let v2 in oedges[v1])
+				if(!this.haveEdge(v1,v2,nedges)) {
+					this.removeEdge(v1,v2);
+					bupdate = true;
+				}
+		for(let v1 in nedges)
+			for(let v2 in nedges[v1])
+				if(!this.haveEdge(v1,v2,oedges)) {
+					this.addMultiEdge(v1,v2);
+					bupdate = true;
+				}
+		return bupdate;
+	} // end updateEdges()
+
+	updateVerticesAndEdges(vdata,edata) {
+		let bupdate = this.updateVertices(vdata) && this.updateEdges(edata);
+		if(bupdate)
+			this.triggerUpdate();
+		return bupdate;
+	} // end updateVerticesAndEdges()
+
+	haveEdge(v1,v2,edges) {
+		return (edges[v1] && edges[v1][v2]) || (edges[v2] && edges[v2][v1]);
+	} // end haveEdge()
+	*/	
+	/*
+	triggerUpdate() {
+		$(document).trigger("cgraphicsgraph-update", [this]);
+	} // end triggerUpdate()
+
+	triggerUpdateCharts(data) {
+		$(document).trigger("ccharts-update", [data]);
+	} // end triggerUpdate()
+	*/
+	
+	
+	
+//////////////////////////
+// general functions 
+
+
+function collidePoint2Circle(px, py, cx, cy, cr) {
+	let dx = px - cx;
+	let dy = py - cy;
+	let d = Math.sqrt((dx*dx) + (dy*dy));
+	return (d <= cr);
+} // end collidePoint2Circle()
+
+function collidePoint2LineSegment (px, py, x1, y1, x2, y2, buffer) {
+	let d1 = distOfPoints(px, py, x1, y1);
+	let d2 = distOfPoints(px, py, x2, y2);  
+	let lineLen = distOfPoints(x1, y1, x2, y2);
+	return (d1 + d2) >= (lineLen-buffer) && (d1+d2) <= (lineLen+buffer)
+} // end collidePoint2LineSegment()
+
+function distOfPoints(x1, y1, x2, y2) { 
+	return Math.sqrt(Math.pow((x2-x1),2) + Math.pow((y2-y1),2)); 
+} // end distOfPoints()
+
+/*
+function handleCGraphicsGraphUpdate(fnhandler) {
+	$(document).on("cgraphicsgraph-update", fnhandler);
+} // end handleUpdate()
+
+function handleCChartsUpdate(fnhandler) {
+	$(document).on("ccharts-update", fnhandler);
+} // end handleUpdate()
+
+export { handleCGraphicsGraphUpdate, handleCChartsUpdate };
+*/
+
+			//cgraphvertex.computeDegreeSequences = CGraphicsGraphVertex.computeDegreeSequences.bind(cgraphvertex);
+		//this.triggerUpdate();
+		
+			//cgraphvertex.computeDegreeSequences = CGraphicsGraphVertex.computeDegreeSequences.bind(cgraphvertex);
+	
+	/*
+	drawGrid(rows, cols, w, color, padding) { 
+		this.drawGridBorder(rows, cols, w, color, padding); 
+	}
+
+	getGridRowColFromPos(x, y, nrows, ncols, padding) {
+		if(nrows <= 0 || ncols <= 0)
+			return null;
+		let d = this.getWH();
+		x -= padding;
+		y -= padding;
+		d.width -= padding * 2;
+		d.height -= padding * 2;
+		let w = Math.floor(d.width / ncols);
+		let h = Math.floor(d.height / nrows);
+		return { row: Math.floor(x/w), col: Math.floor(y/h) }; 
+	}
+
+	getGridRowColPosFromPos(x, y, nrows, ncols, padding, bcenter) {
+		if(nrows <= 0 || ncols <= 0)
+		return null;
+		let d = this.getWH();
+		x -= padding;
+		y -= padding;
+		d.width -= padding * 2;
+		d.height -= padding * 2;
+		let w = Math.floor(d.width / ncols);
+		let h = Math.floor(d.height / nrows);
+		let icol = Math.floor(x / w);
+		let irow = Math.floor(y / h); 
+		x = padding + (icol * w);
+		y = padding + (irow * h);
+		if(bcenter) {
+			x += w*0.5;
+			y += h*0.5;
+		}
+		return {x:x,y:y};
+	}
+
+	getGridRowColPos(irow, icol, nrows, ncols, padding, bcenter) {
+		if(nrows <= 0 || ncols <= 0 || irow < 0 || icol < 0)
+			return null;
+		let d = this.getWH();
+		let x = padding;
+		let y = padding;
+		d.width -= padding * 2;
+		d.height -= padding * 2;
+		let w = Math.floor(d.width / ncols);
+		let h = Math.floor(d.height / nrows);
+		x += (icol * w);
+		y += (irow * h);
+		if(bcenter) {
+			x += w*0.5;
+			y += h*0.5;
+		}
+		return {x:x,y:y};
+	}
+
+	drawGridBorder(rows, cols, w, color, padding) {
+		if(rows <= 0 || cols <= 0)
+			return;
+		let d = this.getWH();
+		d.width -= padding*2;
+		d.height -= padding*2;
+		const x1 = padding;
+		const y1 = padding;
+		const x2 = x1 + d.width;
+		const y2 = y1 + d.height;
+		this.m_graphics.setLineDash([5, 3]);
+		this.drawLine(x1,y1,x2,y1,w,color); // top side
+		this.drawLine(x1,y2,x2,y2,w,color); // bottom side
+		this.drawLine(x1,y1,x1,y2,w,color); // left side
+		this.drawLine(x2,y1,x2,y2,w,color); // right side
+		cols = d.width / cols;
+		rows = d.height / rows;
+		for(let x=cols+x1; x<d.width; x+=cols)
+			this.drawLine(x,y1,x,y2,w,color);
+		for(let y=rows+y1; y<d.height; y+=rows)
+			this.drawLine(x1,y,x2,y,w,color);
+		this.m_graphics.setLineDash([]);
+		return;
+	}
+	*/

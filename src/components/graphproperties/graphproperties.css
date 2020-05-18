@@ -1,0 +1,61 @@
+.sidenote {
+    font-style: italic;
+    text-align: right;
+    float: right;
+}
+
+textarea {
+  max-width: 100%;
+  width:100%;
+  min-width: 50%;
+}
+
+.v-props .count {
+  float: right;
+}
+
+
+.graph-properties label {
+  margin-bottom: 5px;
+}
+
+.graph-properties textarea {
+  margin-bottom: 15px;
+  height: 100px;
+  padding: 5px;
+} 
+
+
+
+.profile-controls {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 5px;
+}
+
+.profile-output {
+  border: 1px solid #bbb;
+/*  font-family: 'Times New Roman', Times, serif;*/
+  padding: 5px;
+}
+
+#short-notation {
+  float: right;
+}
+
+.profile-output .lab {
+  font-style: italic;
+  font-weight: bold;
+}
+
+.profile-output div {
+  overflow-wrap: break-word;
+}
+
+.profile-output div:nth-child(odd) {
+  background-color: #ededed;
+}
+
