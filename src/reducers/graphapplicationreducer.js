@@ -3,17 +3,6 @@ import { GraphApplicationActionsInstance as gaa } from "./graphapplicationaction
 import CGraphicsGraph from "../libs/cgraphicsgraph/cgraphicsgraph";
 import "../libs/cgraphicsgraph/cgraphicsgraph.prototype";
 
-// get data store in local storage
-/*
-const labeltype = localStorage.getItem("label-type");
-const profiletype = localStorage.getItem("profile-type");
-const bshort = localStorage.getItem("bshort");
-const saved_vertices = localStorage.getItem("saved-vertices");
-const saved_vertices_data = localStorage.getItem("saved-vertices-data");
-const saved_edges = localStorage.getItem("saved-edges");
-const saved_edges_data = localStorage.getItem("saved-edges-data");
-*/
-
 export default function GraphApplicationReducer(state=GraphApplicationState, action) {
     let newstate = {...state};
     switch(action.type) {
@@ -21,6 +10,7 @@ export default function GraphApplicationReducer(state=GraphApplicationState, act
             window.cgraphicsgraph = new CGraphicsGraph(action.data);
             newstate.m_cgraphicsgraph = window.cgraphicsgraph;
             newstate.m_cgraphicsgraph.loadFromLocalStorage();
+            newstate.m_bshowloadspinner = false;    
         break;
         case gaa.LAYOUT:
             newstate.m_cgraphicsgraph.layoutVerticesInCircle();
@@ -30,6 +20,7 @@ export default function GraphApplicationReducer(state=GraphApplicationState, act
         break;
         case gaa.GRIDROW:
             newstate.m_cgraphicsgraph.setGridRows(action.data); 
+            newstate.m_cgraphicsgraph.drawAnimationFrame();
         break;
         case gaa.GRIDCOL:
             newstate.m_cgraphicsgraph.setGridColumns(action.data);
@@ -60,7 +51,7 @@ export default function GraphApplicationReducer(state=GraphApplicationState, act
             newstate.m_numedges = newstate.m_cgraphicsgraph.getNumOfEdges(false);
             newstate.m_edges = newstate.m_cgraphicsgraph.toStringEdges(" ","\n");
             updateProfiles(newstate);
-            console.log("saving to local storage")
+            //console.log("saving to local storage")
             newstate.m_cgraphicsgraph.saveToLocalStorage();
         break;
 
@@ -77,15 +68,29 @@ export default function GraphApplicationReducer(state=GraphApplicationState, act
         
         case gaa.SETSHORTPROFILE:
             newstate.m_profiles = {...newstate.m_profiles};
-            newstate.m_profiles.m_bshort = action.data.bshort;
-            localStorage.setItem("bshort", action.data.bshort);
+            newstate.m_profiles.m_bshort = action.data;
+            localStorage.setItem("m_bshort", action.data);
         break;
         
         case gaa.SETSHOWPROFILE:
             let sequences = newstate.m_profiles.m_sequences[action.data.index]
             newstate.m_profiles.m_sequences[action.data.index] = {...sequences};
             newstate.m_profiles.m_sequences[action.data.index].m_bshow = action.data.bshow;
-            alert(action.data.bshow);
+            localStorage.setItem("ProfileSequences[" + action.data.index + "].m_bshow", action.data.bshow)
+        break;
+
+        case gaa.SHOWLOADSPINNER:
+            newstate.m_bshowloadspinner = action.data;
+        break;
+
+        case gaa.TOGGLERIGHTSIDEBAR:
+            newstate.m_brightsidebar = !newstate.m_brightsidebar; 
+            localStorage.setItem("m_brightsidebar", newstate.m_brightsidebar);
+        break;
+
+        case gaa.TOGGLELEFTSIDEBAR:
+            newstate.m_bleftsidebar = !newstate.m_bleftsidebar;
+            localStorage.setItem("m_bleftsidebar", newstate.m_bleftsidebar);
         break;
 
         default:

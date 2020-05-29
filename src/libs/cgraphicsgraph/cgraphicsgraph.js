@@ -40,12 +40,11 @@ export default class CGraphicsGraph extends CGraph {
 
 	//////////////////////////////////////////
 	// adding and removing vertices and edges
-
 	load(data) {
 		if(!data)
-			return;
+			return false;
 		if(!data.vertices)
-			return;
+			return false;
 		let vertices = data.vertices;
 		let vdata = data.vertices_data;
 		for(let i=0; i<vertices.length; i++) {
@@ -56,11 +55,13 @@ export default class CGraphicsGraph extends CGraph {
 			super.addCGraphVertexWithLabel(cvertexdata, vertices[i]);
 		} // end for
 		if(!data.edges)
-			return;
+			return false;
 		let edges = data.edges;
 		for(let i=0; i<edges.length; i++) {
 			this.addMultiEdge(edges[i][0],edges[i][1]);
 		} // end for
+		this.triggerLoad();
+		return true;
 	} // end load()
 
 	addVertexAtClientPos(cx,cy) { 
@@ -266,8 +267,6 @@ export default class CGraphicsGraph extends CGraph {
 		this.drawAnimationFrame();
 	} // end handleContextMenu()
 
-	triggerUpdate() { triggerEvent("cgraphicsgraph.update", this); }	
-	
 	/////////////////
 	// other 
 
@@ -286,8 +285,16 @@ export default class CGraphicsGraph extends CGraph {
 	} // end repositionVertices()
 
 	screenshot() { this.m_cgraphics.saveScreenShot(); }
+
+	triggerUpdate() { triggerEvent("cgraphicsgraph.update", this); }
+	
+	triggerLoad() { triggerEvent("cgraphicsgraph.load", this); }	
 } // end CGraphicsGraph
 
 export function handleCGraphicsGraphUpdate(fnhandler) {
 	handleEvent("cgraphicsgraph.update", fnhandler);
+}
+
+export function handleCGraphicsGraphLoad(fnhandler) {
+	handleEvent("cgraphicsgraph.load", fnhandler);
 }

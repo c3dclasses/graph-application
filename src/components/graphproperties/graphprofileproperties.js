@@ -4,19 +4,26 @@ import { GraphApplicationActionsInstance as gaa } from "../../reducers/graphappl
 import "./graphproperties.css";
 
 export default function GraphProfileProperties() {
+    const dispatch = useDispatch();
     const bshort = useSelector(state=>state.m_profiles.m_bshort);
+    const profiles = useSelector(state=>state.m_profiles);
     const sequences = useSelector(state=>state.m_profiles.m_sequences);
     const bshow = [];
-    //for(let i=0; i<sequences.length; i++) {
     bshow.push(useSelector(state=>state.m_profiles.m_sequences[0].m_bshow));
     bshow.push(useSelector(state=>state.m_profiles.m_sequences[1].m_bshow));
     bshow.push(useSelector(state=>state.m_profiles.m_sequences[2].m_bshow));
     bshow.push(useSelector(state=>state.m_profiles.m_sequences[3].m_bshow));
-    
-
-    //}
-
-    const dispatch = useDispatch();
+    bshow.push(useSelector(state=>state.m_profiles.m_sequences[4].m_bshow));
+    bshow.push(useSelector(state=>state.m_profiles.m_sequences[5].m_bshow));
+    bshow.push(useSelector(state=>state.m_profiles.m_sequences[6].m_bshow));
+    bshow.push(useSelector(state=>state.m_profiles.m_sequences[7].m_bshow));
+    bshow.push(useSelector(state=>state.m_profiles.m_sequences[8].m_bshow));
+    bshow.push(useSelector(state=>state.m_profiles.m_sequences[9].m_bshow));
+    bshow.push(useSelector(state=>state.m_profiles.m_sequences[10].m_bshow));
+    bshow.push(useSelector(state=>state.m_profiles.m_sequences[11].m_bshow));
+    bshow.push(useSelector(state=>state.m_profiles.m_sequences[12].m_bshow));
+    bshow.push(useSelector(state=>state.m_profiles.m_sequences[13].m_bshow));
+    bshow.push(useSelector(state=>state.m_profiles.m_sequences[14].m_bshow));
     return (
         <div className="profile">
             <div className="profile-controls">
@@ -33,14 +40,15 @@ export default function GraphProfileProperties() {
                     sequences.map((sequence, i)=>(
                         (sequence.m_bshow===true) ? 
                             <div key={i}>
-                                <span className="lab">{sequence.m_shortname}:</span> {toJSXSequence(sequence, bshort)}
+                                <input type="hidden" value={profiles.m_bshort} />
+                                <span className="lab">{sequence.m_shortname}:</span> {toJSXSequence(sequence, profiles.m_bshort)}
                             </div> : ""
                     ))
                 }   
             </div>
             <div id="profile-short-notation">
                 <b>short: </b>
-                <input type="checkbox" onChange={(e)=>{dispatch(gaa.setShortProfile(e.target.checked))}} checked={bshort} />
+                <input type="checkbox" onChange={(e)=>{dispatch(gaa.setShortProfile(e.target.checked))}} checked={profiles.m_bshort} />
             </div><br />
         </div>       
     );

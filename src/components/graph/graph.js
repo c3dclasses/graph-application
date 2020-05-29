@@ -1,21 +1,23 @@
 import React, {useEffect} from "react";
 import { useDispatch } from 'react-redux';
+import { GraphApplicationActionsInstance as gaa } from "../../reducers/graphapplicationactions";
 import "./graph.css";
-import GraphApplicationActions from "../../reducers/graphapplicationactions";
 
 // constants
 const SEL_CANVAS_ELEMENT = "graph";
-const gaa = GraphApplicationActions.instance;
-
 const Graph = () => {
+/*
     const dispatch = useDispatch();
     useEffect(() => { 
         dispatch(gaa.init(document.getElementById(SEL_CANVAS_ELEMENT)));
+        alert("loaded the graph");
     }, []);
-    
+ */   
     return (
         <canvas id={SEL_CANVAS_ELEMENT}></canvas>
     );
 } 
+
+
 
 export default Graph;

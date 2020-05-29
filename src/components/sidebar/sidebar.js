@@ -1,24 +1,22 @@
-import React, {useState, useEffect} from "react";
+import React, {useEffect} from "react";
 import SidebarSection from "../sidebarsection/sidebarsection";
-//import DegreeSequences from "../degreesequences/degreesequences";
 import GraphVertexAndEdgeProperties from "../graphproperties/graphvertexandedgeproperties";
 import GraphProfileProperties from "../graphproperties/graphprofileproperties";
-
-
+import { useSelector, useDispatch } from 'react-redux';
+import { GraphApplicationActionsInstance as gaa } from "../../reducers/graphapplicationactions";
 import "./sidebar.css";
 
-function Sidebar(props) {
-    function handleClick() {  _setState({"bclose":!_state.bclose}); }
-    const [_state, _setState] = useState({bclose:true}) 
-    let iconClasses = (_state.bclose) ? "glyphicon glyphicon-menu-right" : "glyphicon glyphicon-menu-left";
-    let sidebarClasses = (_state.bclose) ? "sidebarclose" : "";  
-    useEffect(()=>{ 
-        window.dispatchEvent(new Event("resize"));
-    }, [_state.bclose]);
+function Sidebar() {
+    const bclose = useSelector(state=>state.m_bleftsidebar);
+    const dispatch = useDispatch();
+    useEffect(()=>{ window.dispatchEvent(new Event("resize"));}, [bclose]);
+    useEffect(()=>{ window.dispatchEvent(new Event("resize"));}, [bclose]);
+    let iconClasses = (bclose) ? "glyphicon glyphicon-menu-right" : "glyphicon glyphicon-menu-left";
+    let sidebarClasses = (bclose) ? "sidebarclose" : "";     
     return (
         <aside className={`sidebar ${sidebarClasses}`}>
             <div className="tab">
-                <button onClick={handleClick} className="btn btn-default btn-sm"><span className={iconClasses}></span></button>
+                <button onClick={()=>{dispatch(gaa.toggleLeftSidebar())}} className="btn btn-default btn-sm"><span className={iconClasses}></span></button>
             </div>        
             <div className="sidebarcontent">
                 <SidebarSection headerName="Graph Properties">

@@ -138,12 +138,12 @@ CGraphicsGraph.prototype.saveToLocalStorage = function() {
 
 CGraphicsGraph.prototype.loadFromLocalStorage = function() {
 	let graphdata = JSON.parse(localStorage.getItem("graphdata"));
-	this.load(graphdata);      
-	setTimeout(()=>{
+	let ret = this.load(graphdata);
+	if(ret) {
 		this.triggerUpdate();
 		this.drawAnimationFrame();
-	},1000)
-	return;
+	}	
+	return ret;
 }
 
 CGraphicsGraph.prototype.haveEdge = function(v1,v2,edges) {
@@ -297,7 +297,6 @@ CGraphics.prototype.getGridRowColPos = function(irow, icol, nrows, ncols, paddin
 	return {x:x,y:y};
 }
 
-
 CGraphicsGraph.prototype.handleMouseUp = function(e) {
 	if(this.m_bMouseDown === false)
 		return;
@@ -352,6 +351,7 @@ CGraphicsGraph.prototype.layoutVerticesInCircle = function() {
 CGraphicsGraph.prototype.clearAll = function() {
 	this.clear();
 	this.drawAnimationFrame();
+	this.triggerUpdate();
 }
 
 CGraphicsGraph.prototype.computeVertexProfiles = function() {
@@ -361,17 +361,6 @@ CGraphicsGraph.prototype.computeVertexProfiles = function() {
 			vertices[v].computeProfile();
 } 
 
-/*
-CGraphicsGraph.prototype.toStringVertices = function(delimiter) {
-    let str = [];
-    for(let i=0; i<vindices.length; i++) {
-        //if(window.m_cgraphicsgraph.m_bshowvabc)
-        //    str.push(window._n2l[vindices[i]]);
-        //else 
-        str.push(vindices[i]);
-    } // end for
-    return str.join(delimiter);
-}*/
-
-
 handleCGraphicsGraphUpdate (function(cgraph) { cgraph.computeVertexProfiles();});
+
+CGraphicsGraph.prototype.doER = function(n, p) {}

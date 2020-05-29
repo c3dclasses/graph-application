@@ -20,7 +20,7 @@ export default class CEdgeData{
 export class CNewEdgeDataLine {
 	constructor() { this.init(); } 
 	init() {
-		this.m_w = 8;
+		this.m_w = 5;
 		this.m_color = "#0000ff";
 		this.setEndPos(0,0);
 		this.setStartPos(0,0);
