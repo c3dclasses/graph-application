@@ -1,3 +1,5 @@
+import { Observable } from 'rxjs';
+
 export function delayFunctionCall(fn,ms) {  return function() { setTimeout(fn,ms); }  } 
 
 export function getRandomNumber(min, max) { return Math.random() * (max - min) + min; } 
@@ -13,7 +15,12 @@ export function collidePoint2LineSegment (px, py, x1, y1, x2, y2, buffer) {
 	let d1 = distOfPoints(px, py, x1, y1);
 	let d2 = distOfPoints(px, py, x2, y2);  
 	let lineLen = distOfPoints(x1, y1, x2, y2);
-	return (d1 + d2) >= (lineLen-buffer) && (d1+d2) <= (lineLen+buffer)
+
+	console.log("d1: ", d1, " d2: ", d2, "lineLen: ", lineLen, "d1+d2: ", (d1+d2));
+	console.log("lineLen + buffer: ", (lineLen + buffer), "lineLen - buffer: ", (lineLen - buffer),);
+
+
+	return (Math.floor(d1+d2)) >= (lineLen-buffer) && (Math.floor(d1+d2)) <= (lineLen+buffer)
 } // end collidePoint2LineSegment()
 
 export function distOfPoints(x1, y1, x2, y2) { 
@@ -52,12 +59,76 @@ export function median(values) {
         return (values[half-1] + values[half]) / 2.0;
 }
 
-export function createUUID(){
-    var dt = new Date().getTime();
-    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        var r = (dt + Math.random()*16)%16 | 0;
-        dt = Math.floor(dt/16);
-        return (c=='x' ? r :(r&0x3|0x8)).toString(16);
-    });
-    return uuid;
-}
+export function fetchFromNetworkX(requestParams) {
+	const requestapi = "http://kevlewis.com/rest/graphapplication/networkx/request.php";     
+	const options = {
+		method: 'POST',
+		header: {
+			'Accept': 'application/json',
+			'Content-type': 'aaplication/json'
+		},
+		body: JSON.stringify(requestParams)
+	};
+	const observable = new Observable(subscriber => {
+		fetch(requestapi, options)
+			.then(response=>response.json())
+			.then(request=>{
+				// send the request object
+				if(request.m_berror === true) {
+					subscriber.error(request);
+					subscriber.complete();
+					return;
+				}
+				subscriber.next(request);
+				fetchMoreFromNetworkX(request, subscriber);			
+			})
+			.catch(error=>{
+				subscriber.error(error); // delivers an error if it caught one
+			});
+	});
+	return observable;
+} // fetchFromNetworkX()
+
+function fetchMoreFromNetworkX(responseParams, subscriber) {
+	const responseapi = "http://kevlewis.com/rest/graphapplication/networkx/response.php";
+	const options = {
+		method: 'POST',
+		header: {
+			'Accept': 'application/json',
+			'Content-type': 'application/json'
+		},
+		body: JSON.stringify(responseParams)
+	}; // end options
+
+	let _setTimeoutID = -1;
+	function fetchMore() {
+		fetch(responseapi, options)
+			.then(response=>response.json())
+			.then(response=>{
+				console.log("response: ", response);
+				if(_setTimeoutID > -1)
+					clearInterval(_setTimeoutID);
+				
+				if(response && response.m_percentage===100) {
+					subscriber.complete();
+				}
+				else if(response.m_berror) {
+					subscriber.error(response.error);
+					subscriber.complete();
+				}
+				else {
+					subscriber.next(response);
+					_setTimeoutID = setTimeout(fetchMore, 5000);
+				}
+			}) // end then
+			.catch(error=>{
+				if(_setTimeoutID > -1)
+					clearInterval(_setTimeoutID);
+				subscriber.error(error);	
+				subscriber.complete();
+			}); // end catch 
+	} // end fetchMore()
+	
+	// call the fetch more function
+	fetchMore();
+} // fetchMoreFromNetworkX()

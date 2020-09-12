@@ -1,18 +1,21 @@
 import CGraphicsGraph, { handleCGraphicsGraphUpdate } from "./cgraphicsgraph";
 import CGraphics from "../cgraphics/cgraphics";
 
-const prevInit = CGraphicsGraph.prototype.init;
-CGraphicsGraph.prototype.init = function(elecanvas) {
-	prevInit.call(this, elecanvas);
-	this.m_bshowgrid = false;
-	this.m_ngridrows = 3;
-	this.m_ngridcols = 3;
-	this.m_gridpadding = 20;
-	this.m_gridwidth = 1;
-	this.m_gridheight = 1;
-	this.m_gridcolor = "#5e5e5e";
+const prevInitDefaults = CGraphicsGraph.prototype.initDefaults;
+CGraphicsGraph.prototype.initDefaults = function() {
+	this.prevInitDefaults.call(this);
+	this.setProperties({
+		m_bshowgrid:false,
+		m_ngridrows:3,
+		m_ngridcols:3,
+		m_gridpadding:20,
+		m_gridwidth:1,
+		m_gridheight:1,
+		m_gridcolor:"#5e5e5e"
+	});
 }
 
+/*
 CGraphicsGraph.prototype.setGridRows = function(rows) { 
 	this.m_ngridrows = rows; 
 	this.drawAnimationFrame();
@@ -20,27 +23,27 @@ CGraphicsGraph.prototype.setGridRows = function(rows) {
 CGraphicsGraph.prototype.setGridColumns = function(cols) { 
 	this.m_ngridcols = cols; 
 	this.drawAnimationFrame();
-}
+}*/
 
 CGraphicsGraph.prototype.getGridCellPosFromPos = function(p) {		
 	return this.m_cgraphics.getGridRowColPosFromPos(p.x, p.y, 
-		this.m_ngridrows, this.m_ngridcols, this.m_gridpadding, true);
+		this.m_properties.m_ngridrows, this.m_properties.m_ngridcols, this.m_properties.m_gridpadding, true);
 }
 
 CGraphicsGraph.prototype.toggleGridLayout = function() {
-	this.m_bshowgrid = !this.m_bshowgrid;
+	this.m_properties.m_bshowgrid = !this.m_properties.m_bshowgrid;
 	this.drawAnimationFrame();
-	return this.m_bshowgrid;
+	return this.m_properties.m_bshowgrid;
 }
 
 CGraphicsGraph.prototype.getGridRowColPos = function(irow, icol, bcenter) {
-	return this.m_cgraphics.getGridRowColPos(irow, icol, this.m_ngridrows, this.m_ngridcols, 
-		this.m_gridpadding, bcenter);
+	return this.m_cgraphics.getGridRowColPos(irow, icol, this.m_properties.m_ngridrows, this.m_properties.m_ngridcols, 
+		this.m_properties.m_gridpadding, bcenter);
 }
 
 CGraphicsGraph.prototype.getGridCellPos = function(i, bcenter) {
 	let icol = i%this.m_ngridcols;
-	let irow = Math.floor(i/this.m_ngridcols);
+	let irow = Math.floor(i/this.properties.m_ngridcols);
 	return this.getGridRowColPos(irow, icol, bcenter);
 }
 
@@ -59,12 +62,12 @@ CGraphicsGraph.prototype.layoutVerticesInGrid = function() {
 }
 
 CGraphicsGraph.prototype.drawGraph = function() {
-	this.m_cgraphics.clear(this.m_bgcolor, 0.0);
+	this.m_cgraphics.clear(this.m_properties.m_bgcolor, 0.0);
 	this.drawNewEdge();
 	this.drawEdges();
-	if(this.m_bshowgrid) {
-		this.m_cgraphics.drawGrid(this.m_ngridrows, this.m_ngridcols, 
-			this.m_gridwidth, this.m_gridcolor, this.m_gridpadding);
+	if(this.m_properties.m_bshowgrid) {
+		this.m_cgraphics.drawGrid(this.m_properties.m_ngridrows, this.m_properties.m_ngridcols, 
+			this.m_properties.m_gridwidth, this.m_properties.m_gridcolor, this.m_gridpadding);
 	}
 	this.drawVertices();
 } // end drawGraph()
@@ -74,7 +77,37 @@ CGraphics.prototype.drawGrid = function(rows, cols, w, color, padding) {
 	this.drawGridPoints(rows, cols, w, color, padding); 
 }
 
+CGraphics.prototype.drawGridPoints = function(rows, cols, w, color, padding) {
+	if(rows <= 0 || cols <= 0)
+		return;
+	console.log(rows, cols);
+	w = 3;
+	color = "black";
+	padding = 0;
+	console.log("draw grid points")
+	let d = this.getWH();
+	d.w -= padding*2;
+	d.h -= padding*2;
+	const x1 = padding;
+	const y1 = padding;
+	const x2 = x1 + d.w;
+	const y2 = y1 + d.h;
+	this.m_graphics.setLineDash([5, 3]);
+	this.drawLine(x1,y1,x2,y1,w,color); // top side
+	this.drawLine(x1,y2,x2,y2,w,color); // bottom side
+	this.drawLine(x1,y1,x1,y2,w,color); // left side
+	this.drawLine(x2,y1,x2,y2,w,color); // right side
+	this.m_graphics.setLineDash([]);
+	cols = d.w / cols;
+	rows = d.h / rows;
+	for(let x=x1+cols*0.5; x<d.w; x+=cols)
+		for(let y=y1+rows*0.5; y<d.h; y+=rows)
+			this.drawCircle(x,y,5,color,color);	
+	return;
+}
 
+
+/*
 CGraphicsGraph.prototype.updateVertices = function(vertices) {
 	let nvertices={};
 	let bupdate = false;
@@ -322,6 +355,7 @@ CGraphicsGraph.prototype.handleMouseUp = function(e) {
 	this.disableSelection();
 	this.drawAnimationFrame();
 } // end handleMouseUp()
+*/
 
 CGraphicsGraph.prototype.layoutVerticesInCircle = function() {
 	let d = this.m_cgraphics.getWH();
@@ -361,6 +395,11 @@ CGraphicsGraph.prototype.computeVertexProfiles = function() {
 			vertices[v].computeProfile();
 } 
 
-handleCGraphicsGraphUpdate (function(cgraph) { cgraph.computeVertexProfiles();});
+handleCGraphicsGraphUpdate (function(cgraph) { cgraph.computeVertexProfiles(); });
 
+/*
 CGraphicsGraph.prototype.doER = function(n, p) {}
+*/
+
+CGraphicsGraph.m_instance = CGraphicsGraph.m_instance || new CGraphicsGraph();
+export const CGraphicsGraphInstance = CGraphicsGraph.m_instance;

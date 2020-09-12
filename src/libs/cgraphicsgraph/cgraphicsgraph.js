@@ -1,4 +1,10 @@
-import { getRandomNumber, collidePoint2Circle, collidePoint2LineSegment, triggerEvent, handleEvent } from "../utility/utility";
+import { 
+	getRandomNumber, 
+	collidePoint2Circle, 
+	collidePoint2LineSegment, 
+	triggerEvent, 
+	handleEvent
+} from "../utility/utility";
 import CGraphics from "../cgraphics/cgraphics";
 import CGraph from "../cgraph/cgraph";
 import "./cgraphicsgraphvertex";
@@ -7,77 +13,89 @@ import CEdgeData, {CNewEdgeDataLine} from "./cedgedata";
 import CVertexData from "./cvertexdata";
 
 export default class CGraphicsGraph extends CGraph {
-	constructor(elecanvas) { 	
+	static m_instance = CGraphicsGraph.m_instance || new CGraphicsGraph();
+	constructor() { 	
 		super();
-		this.init(elecanvas);
+		this.draw = this.draw.bind(this);
+		this.m_numdrawcalls = 0;
+		this.m_bcreated = false;
+		this.m_bstoregraph = true;
+		this.m_properties = null;
+		this.loadFromLocalStorage();
+		if(!this.m_properties) {
+			this.m_properties = {};
+			this.initDefaults();
+			this.initDefaults2();
+		}
 	}
 
-	init(elecanvas) {
-		this.m_bgcolor = "#e6e6e6";
+	create(elecanvas) {
 		this.m_cnewedgeline = new CNewEdgeDataLine();
 		this.m_cgraphics = new CGraphics(elecanvas, true);
 		this.m_canvas = this.m_cgraphics.getCanvas();
-		this.m_vlabeltype = "letters";
-		this.m_vprofiletype = 0;
-		this.m_numDrawCalls = 0;
-		this.m_vradius = 18;
-		this.m_ewidth = 5;
-		this.draw = this.draw.bind(this);
 		this.disableSelection();
 		this.initEventHandlers();
-	} 
+		this.triggerUpdate();
+		this.m_bcreated = true;
+		return true;
+	}
+
+	initDefaults() {
+		this.setProperties(
+			{
+				m_bgcolor: "#e6e6e6",
+				m_vlabeltype: "letters",
+				m_vprofiletype: {},
+				m_vradius: 15,
+				m_ewidth: 5,
+				m_busevradius: true,
+				m_buseewidth: true,
+				m_props: null,
+			}
+		)
+	}
+
+	setProperties(properties) {
+		for(let propname in properties)
+			this.m_properties[propname] = properties[propname];
+		this.saveToLocalStorage2();
+		if(this.m_bcreated)
+			this.drawAnimationFrame();
+	}
+
+	getProperties() { 
+		return this.m_properties;
+	}
 
 	// label and profile type
-	setLabelType(labeltype) { this.m_vlabeltype = labeltype; }
-	setProfileType(profiletype) { this.m_vprofiletype = profiletype; }
+	//setLabelType(labeltype) { this.m_properties.m_vlabeltype = labeltype; }
+	//setProfileType(profiletype) { this.m_properties.m_vprofiletype = profiletype; }
+	//setVertexRadius(radius) { this.m_properties.m_vradius = radius;}
+	//setEdgeWidth(width) { this.m_properties.m_ewidth = width;}
+	
 	
 	/////////////////////////////////
 	// get / set graph properties
 	
 	getCGraphics() { return this.m_cgraphics; }
 	
-	getBGColor() { return this.m_bgcolor; }
-
-	//////////////////////////////////////////
-	// adding and removing vertices and edges
-	load(data) {
-		if(!data)
-			return false;
-		if(!data.vertices)
-			return false;
-		let vertices = data.vertices;
-		let vdata = data.vertices_data;
-		for(let i=0; i<vertices.length; i++) {
-			let cvertexdata = new CVertexData();
-			if(!vdata || !vdata[i])
-				cvertexdata.init(this.getInitParams());
-			else cvertexdata.loadParams(vdata[i]);
-			super.addCGraphVertexWithLabel(cvertexdata, vertices[i]);
-		} // end for
-		if(!data.edges)
-			return false;
-		let edges = data.edges;
-		for(let i=0; i<edges.length; i++) {
-			this.addMultiEdge(edges[i][0],edges[i][1]);
-		} // end for
-		this.triggerLoad();
-		return true;
-	} // end load()
+	//getBGColor() { return this.m_bgcolor; }
 
 	addVertexAtClientPos(cx,cy) { 
-		return super.addCGraphVertex(new CVertexData({x:cx,y:cy,r:this.m_vradius}));
+		let d = this.m_cgraphics.getWH();
+		return super.addCGraphVertex(new CVertexData({x:cx, y:cy, w:d.w, h:d.h, r:this.m_properties.m_vradius}));
 	} 
 	
 	addVertexAtRandomClientPos(label) { 
-		return super.addCGraphVertexWithLabel(new CVertexData(this.getInitParams()),label);
+		return super.addCGraphVertexWithLabel(new CVertexData(this.getCVertexDataParams()),label);
 	} 
 	
 	removeVertex(vindex) { 
 		super.removeVertex(vindex); 
 	} 
 	
-	addMultiEdge(vindex1, vindex2) { 
-		return  super.addMultiCGraphEdge(vindex1, vindex2, new CEdgeData(this, vindex1, vindex2));
+	addMultiEdge(vindex1, vindex2, cedgedata) { 
+		return  super.addMultiCGraphEdge(vindex1, vindex2, cedgedata);
 	} 
 
 	removeMultiEdge(vindex1, vindex2) { super.removeMultiEdge(vindex1, vindex2); }
@@ -90,46 +108,44 @@ export default class CGraphicsGraph extends CGraph {
 		this.m_cnewedgeline.setStartPos(v.m_x,v.m_y);
 		this.m_cnewedgeline.setEndPos(x,y);
 	} // end addNewEdgeAtXY()
-
+	
 	///////////////////////
 	// selection
 	
-	getSelectedVertex() { return this.m_selectedVertex; }
+	getSelectedVertex() { return this.m_selectedvertex; }
 	
 	enableSelection(x,y) {
-		this.m_selectedVertex = this.collidePoint2CGraphVertex(x,y);
-		this.m_bMouseDown = true;
+		this.m_selectedvertex = this.collidePoint2CGraphVertex(x,y);
+		this.m_bmousedown = true;
 	} // end enableSelection()
 
 	disableSelection() {
-		this.m_selectedVertex = null;
-		this.m_bMouseDown = false;
+		this.m_selectedvertex = null;
+		this.m_bmousedown = false;
 	} // end disableSelection()
 
 	//////////////////
 	// drawing
 	draw() { 
-		if(this.m_numDrawCalls === 1) {
-			this.drawGraph(); 
-			this.m_numDrawCalls = 0;
-		}
-		else this.m_numDrawCalls--;
+		this.drawGraph();
+		this.m_numdrawcalls = 0;
 	}
 
 	drawAnimationFrame() { 
-		requestAnimationFrame(this.draw);
-		this.m_numDrawCalls++;
+		if(this.m_numdrawcalls === 0)
+			requestAnimationFrame(this.draw);
+		this.m_numdrawcalls++;
 	}
 
 	drawGraph() {
-		this.m_cgraphics.clear(this.m_bgcolor, 0.0);
+		this.m_cgraphics.clear(this.m_properties.m_bgcolor, 0.0);
 		this.drawNewEdge();
 		this.drawEdges();
 		this.drawVertices();
 	} // end drawGraph()
 
 	drawNewEdge() {
-		if(this.m_bMouseDown && this.getSelectedVertex())
+		if(this.m_bmousedown && this.getSelectedVertex())
 			this.m_cnewedgeline.draw(this.m_cgraphics);
 	} // end drawNewEdge()
 	
@@ -160,7 +176,7 @@ export default class CGraphicsGraph extends CGraph {
 		for(let v in vertices) {
 			let cgraphvertex = vertices[v];
 			let data = cgraphvertex.getData();
-			if(collidePoint2Circle(x, y, data.m_x, data.m_y, data.m_r + 20)) {
+			if(collidePoint2Circle(x, y, data.m_x, data.m_y, data.getRadius())) {
 				return cgraphvertex;
 			}
 		} // end for
@@ -171,27 +187,39 @@ export default class CGraphicsGraph extends CGraph {
 		let edges = this.getEdges();
 		if(edges == null)
 			return null;
+		console.log("go through all the edges")
 		for(let v1 in edges) {
 			for(let v2 in edges[v1]) {
 				let cgraphedge = edges[v1][v2]; 
+				let edata = cgraphedge.getData();
 				let vdata1 = cgraphedge.getCGraphVertex1().getData();
 				let vdata2 = cgraphedge.getCGraphVertex2().getData();
-				if(collidePoint2LineSegment(x,y,vdata1.m_x,vdata1.m_y,vdata2.m_x,vdata2.m_y,8))
+				if(collidePoint2LineSegment(x, y, vdata1.m_x, vdata1.m_y, vdata2.m_x, vdata2.m_y, edata.getWidth()))
 					return cgraphedge;
 			} // end for
 		} // end for
 		return null;
 	} // end collidePoint2CGraphEdge()
 
-	getInitParams() {
+	getCVertexDataParams() {
 		let d = this.m_cgraphics.getWH();
-		let r = this.m_vradius;
+		let r = this.m_properties.m_vradius;
 		return {
 			r: r, 
+			w: d.w,
+			h: d.h,
 			x: getRandomNumber(r, d.w-r),
 			y: getRandomNumber(r, d.h-r)
 		}
-	} // end getInitParams()
+	} // end getCVertexDataParams()
+
+	getCEdgeDataParams() {
+		return {
+			w: this.m_ewidth, 
+			c: "#ff0000",
+			label: ""
+		}
+	}
 
 	////////////////////////////
 	// event handlers methods
@@ -202,11 +230,11 @@ export default class CGraphicsGraph extends CGraph {
 		this.m_canvas.addEventListener("mouseup", this.handleMouseUp.bind(this));
 		this.m_canvas.addEventListener("mousemove", this.handleMouseMove.bind(this));
 		this.m_canvas.addEventListener("contextmenu", this.handleContextMenu.bind(this));
+		handleCGraphicsGraphUpdate(this.handleUpdate.bind(this));
 	} // end initEventHandlers()
 
 	handleResize(ow,oh,nw,nh) {
 		this.repositionVertices(ow, oh, nw, nh); 
-		//this.drawGraph();	
 		this.drawAnimationFrame();
 	}
 	
@@ -218,7 +246,7 @@ export default class CGraphicsGraph extends CGraph {
 	} // end handleMouseDown()
 	
 	handleMouseUp(e) {
-		if(this.m_bMouseDown === false)
+		if(this.m_bmousedown === false)
 			return;
 		let p = this.m_cgraphics.getXYFromClientXY(e.clientX,e.clientY);
 		let cgraphvertex_start = this.getSelectedVertex();
@@ -232,7 +260,7 @@ export default class CGraphicsGraph extends CGraph {
 			this.triggerUpdate();
 		}
 		else if(cgraphvertex_start && cgraphvertex_end && cgraphvertex_start !== cgraphvertex_end) {
-			this.addMultiEdge(cgraphvertex_start.getIndex(), cgraphvertex_end.getIndex());
+			this.addMultiEdge(cgraphvertex_start.getIndex(), cgraphvertex_end.getIndex(), new CEdgeData());
 			this.triggerUpdate();
 		}
 		this.disableSelection();
@@ -240,7 +268,7 @@ export default class CGraphicsGraph extends CGraph {
 	} // end handleMouseUp()
 	
 	handleMouseMove(e) {
-		if(this.m_bMouseDown) {
+		if(this.m_bmousedown) {
 			let p = this.m_cgraphics.getXYFromClientXY(e.clientX,e.clientY);
 			this.addNewEdgeAtXY(p.x,p.y);
 			//this.drawGraph();
@@ -259,6 +287,7 @@ export default class CGraphicsGraph extends CGraph {
 			this.triggerUpdate();
 			return;
 		} // end if
+
 		let cgraphedge = this.collidePoint2CGraphEdge(p.x,p.y);
 		if(cgraphedge) {
 			this.removeMultiEdge(cgraphedge.getVertexIndex1(), cgraphedge.getVertexIndex2());
@@ -266,6 +295,13 @@ export default class CGraphicsGraph extends CGraph {
 		}
 		this.drawAnimationFrame();
 	} // end handleContextMenu()
+
+	
+	handleUpdate(cgraphicsgraph) {
+		this.saveToLocalStorage2();
+		this.drawAnimationFrame();
+	}
+
 
 	/////////////////
 	// other 
@@ -282,13 +318,259 @@ export default class CGraphicsGraph extends CGraph {
 			let vdata = vertices[v].getData();
 			vdata.reposition(sw,sh,nw,nh);
 		} // end for
+		this.triggerUpdate();
 	} // end repositionVertices()
 
-	screenshot() { this.m_cgraphics.saveScreenShot(); }
+	repositionVertices(ow,oh,nw,nh) {
+		if(ow === 0 || oh === 0)
+			return;
+		let sw = nw/ow;
+		let sh = nh/oh;
+		let vertices = this.getVertices();
+		if(vertices == null)
+			return;
+		for(let v in vertices) {
+			let vdata = vertices[v].getData();
+			vdata.reposition(sw,sh,nw,nh);
+		} // end for
+	} // end repositionVertices()
+
+	restoreVertexPositions() {
+		let vertices = this.getVertices();
+		let d = this.m_cgraphics.getWH();
+		if(vertices == null)
+			return;
+		for(let v in vertices) {
+			let vdata = vertices[v].getData();
+			vdata.restorePos(d.w,d.h);
+		} // end for
+		this.triggerUpdate();
+		this.drawAnimationFrame();
+	}
+
+	saveVertexPositions() {
+		let vertices = this.getVertices();
+		let d = this.m_cgraphics.getWH();
+		if(vertices == null)
+			return;
+		for(let v in vertices) {
+			let vdata = vertices[v].getData();
+			vdata.savePos(d.w,d.h);
+		} // end for
+		this.triggerUpdate();
+		this.drawAnimationFrame();
+	}
+
+	saveScreenshot() { this.m_cgraphics.saveScreenshot(); }
 
 	triggerUpdate() { triggerEvent("cgraphicsgraph.update", this); }
 	
 	triggerLoad() { triggerEvent("cgraphicsgraph.load", this); }	
+
+	saveToLocalStorage2() {
+		if(!this.m_bstoregraph) {
+			localStorage.removeItem("CGraphicsGraph");
+			return;
+		}
+		this.m_properties.m_vdata = this.getAllVerticesAndData();
+		this.m_properties.m_edata = this.getAllEdgesAndData();
+		localStorage.setItem("CGraphicsGraph", JSON.stringify(this.m_properties));
+	}
+
+	loadFromLocalStorage() {
+		if(!this.m_bstoregraph) {
+			localStorage.removeItem("CGraphicsGraph");
+			return;
+		}
+		let properties = localStorage.getItem("CGraphicsGraph");
+		if(properties === "")
+			return;
+		properties = JSON.parse(properties);
+		if(properties && properties.m_vdata)
+			this.loadFromGraphData(properties.m_vdata, properties.m_edata);
+		console.log(properties);
+		this.m_properties = properties;
+		return;
+	}
+
+	//////////////////////////////////////////
+	// adding and removing vertices and edges
+	loadFromGraphData(vdata, edata) {
+		if(!vdata)
+			return false;
+		if(!vdata[0].length === 0)	// no vertices
+			return false;
+		let vertices = vdata[0];	// vertex labels 
+		let vertices_data = vdata[1];	// vertex data per label
+		for(let i=0; i<vertices.length; i++) {
+			let cvertexdata = new CVertexData();
+			if(!vertices_data || !vertices_data[i])
+				cvertexdata.initParams(this.getCVertexDataParams());
+			else cvertexdata.loadParams(vertices_data[i]);
+			super.addCGraphVertexWithLabel(cvertexdata, vertices[i]);
+		} // end for
+		if(!edata)
+			return false;
+		let edges = edata[0];
+		let edges_data = edata[1];
+		for(let i=0; i<edges.length; i++) {
+			let cedgedata = new CEdgeData();
+			if(!edges_data || !edges_data[i])
+				cedgedata.initParams(this.getCEdgeDataParams());
+			else cedgedata.loadParams(edges_data[i])
+			this.addMultiEdge(edges[i][0], edges[i][1], cedgedata);
+		} // end for
+		this.triggerLoad();
+		this.triggerUpdate();
+		return true;
+	} // end load()
+
+
+	///////////////////////////////////////////////////////////
+	// more stuff
+
+	
+	initDefaults2() {
+		alert("init defaults 2");
+		this.setProperties({
+			m_bshowgrid:false,
+			m_ngridrows:3,
+			m_ngridcols:3,
+			m_gridpadding:20,
+			m_gridwidth:1,
+			m_gridheight:1,
+			m_gridcolor:"#5e5e5e"
+		});
+	}
+	
+	getGridCellPosFromPos(p) {		
+		return this.m_cgraphics.getGridRowColPosFromPos(p.x, p.y, 
+			this.m_properties.m_ngridrows, this.m_properties.m_ngridcols, this.m_properties.m_gridpadding, true);
+	}
+
+	toggleGridLayout() {
+		this.m_properties.m_bshowgrid = !this.m_properties.m_bshowgrid;
+		this.drawAnimationFrame();
+		return this.m_properties.m_bshowgrid;
+	}
+
+	getGridRowColPos(irow, icol, bcenter) {
+		return this.m_cgraphics.getGridRowColPos(irow, icol, this.m_properties.m_ngridrows, this.m_properties.m_ngridcols, 
+			this.m_properties.m_gridpadding, bcenter);
+	}
+
+	getGridCellPos(i, bcenter) {
+		let icol = i%this.m_ngridcols;
+		let irow = Math.floor(i/this.properties.m_ngridcols);
+		return this.getGridRowColPos(irow, icol, bcenter);
+	}
+
+	layoutVerticesInGrid() {
+		let vertices = this.getVertices();
+		if(vertices == null)
+			return;
+		let indices = this.getVertexIndices();
+		for(var i=0; i<indices.length; i++) {
+			let pos = this.getGridCellPos(i,true); 
+			if(pos) {
+				let vd = vertices[indices[i]].getData();
+				vd.setPos(pos.x, pos.y);
+			}
+		}
+	}
+
+	drawGraph() {
+		this.m_cgraphics.clear(this.m_properties.m_bgcolor, 0.0);
+		this.drawNewEdge();
+		this.drawEdges();
+		if(this.m_properties.m_bshowgrid) {
+			this.m_cgraphics.drawGrid(this.m_properties.m_ngridrows, this.m_properties.m_ngridcols, 
+				this.m_properties.m_gridwidth, this.m_properties.m_gridcolor, this.m_properties.m_gridpadding);
+		}
+		this.drawVertices();
+	} // end drawGraph()
+	
+	layoutVerticesInCircle() {
+		let d = this.m_cgraphics.getWH();
+		let vertices = this.getVertices();
+		if(vertices == null)
+			return;
+		let indices = this.getVertexIndices();
+		if(indices == null)
+			return;
+		let cx = d.w * 0.5;
+		let cy = d.h * 0.5;
+		let rx = cx * 0.8;
+		let ry = cy * 0.8;
+		let nsteps = indices.length;
+		let invnsteps = 1/nsteps;		
+		for(let i=0; i<nsteps; i++) {
+			let theta = 2*Math.PI*(i*invnsteps);
+			let v = indices[i];
+			let data = vertices[v].getData();
+			let x = cx + (rx * Math.cos(theta));
+			let y = cy + (ry * Math.sin(theta));
+			data.setPos(x,y);
+		} // end for
+		this.drawAnimationFrame();
+	} // end layoutVerticesInCircle()
+
+	clearAll() {
+		this.clear();
+		this.drawAnimationFrame();
+		this.triggerUpdate();
+	}
+	
+	computeVertexProfiles() {
+		let vertices = this.getVertices();
+		if(vertices)
+			for(let v in vertices)
+				vertices[v].computeProfile();
+	} 
+
+	layoutVerticesInGrid() {
+		let vertices = this.getVertices();
+		if(vertices == null)
+			return;
+		let indices = this.getVertexIndices();
+		for(var i=0; i<indices.length; i++) {
+			let pos = this.getGridCellPos(i,true); 
+			if(pos) {
+				let vd = vertices[indices[i]].getData();
+				vd.setPos(pos.x, pos.y);
+			}
+		}
+	}
+
+	
+	handleMouseUp(e) {
+		if(this.m_bMouseDown === false)
+			return;
+		let p = this.m_cgraphics.getXYFromClientXY(e.clientX,e.clientY);
+		let cgraphvertex_start = this.getSelectedVertex();
+		let cgraphvertex_end = this.collidePoint2CGraphVertex(p.x,p.y);
+		if(!cgraphvertex_start && !cgraphvertex_end) {
+			if(this.m_properties.m_bshowgrid)
+				p = this.getGridCellPosFromPos(p);
+			this.addVertexAtClientPos(p.x,p.y);
+			this.triggerUpdate();
+		}
+		else if(cgraphvertex_start && !cgraphvertex_end) {
+			if(this.m_properties.m_bshowgrid)
+				p = this.getGridCellPosFromPos(p);
+			cgraphvertex_start.getData().setPos(p.x,p.y);
+			this.triggerUpdate();
+		}
+		else if(cgraphvertex_start && cgraphvertex_end && cgraphvertex_start !== cgraphvertex_end) {
+			this.addMultiEdge(cgraphvertex_start.getIndex(), cgraphvertex_end.getIndex(), new CEdgeData());
+			this.triggerUpdate();
+		}
+		this.disableSelection();
+		this.drawAnimationFrame();
+	} // end handleMouseUp()
+
+
+
 } // end CGraphicsGraph
 
 export function handleCGraphicsGraphUpdate(fnhandler) {
@@ -298,3 +580,5 @@ export function handleCGraphicsGraphUpdate(fnhandler) {
 export function handleCGraphicsGraphLoad(fnhandler) {
 	handleEvent("cgraphicsgraph.load", fnhandler);
 }
+
+export const CGraphicsGraphInstance = CGraphicsGraph.m_instance;

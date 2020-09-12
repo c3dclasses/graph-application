@@ -1,6 +1,5 @@
 import React from "react";
 import "./sidebarsection.css";
-
 export default function SidebarSection(props) {  
     return (
         <section className={`sidebarsection ${props.className}`}>

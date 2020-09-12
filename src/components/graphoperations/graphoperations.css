@@ -17,16 +17,17 @@
     display: block;
 }
 
-.grid-ops span {
-    color: green;
-}
-
 .graph-options {
     float: right;
 }
 
 .graph-operations select, .graph-operations input
 .graph-options select, .graph-options input {
+    width: 65px;
+    font-size: 9px;
+}
+
+.op2 input {
     width: 65px;
     font-size: 9px;
 }
@@ -60,3 +61,33 @@
 .graph-operations .op2 {
     margin-right: 10px;
 } 
+
+.profiles {
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+}
+
+
+.profile {
+    display: flex;
+    flex-direction: row;
+    color: black;    
+    padding: 3px;
+}
+
+.profile input {
+    width: auto;
+    display: inline;
+    padding: 0;
+    margin: 0;
+    margin-right: 5px;
+}
+
+
+.profile span {
+    color: black;
+    font-size: 10px;
+    line-height: 11px;
+
+}

@@ -1,19 +1,157 @@
+
 .header {
-	height: 50px;
+	min-height: 50px;
 	width:100%;
-	padding: 10px;
+	background: white;
+	display: flex;
+	position: relative;
+	transition: min-height;
+    transition-duration: .4s;
+	transition-timing-function: ease;
+}
+
+.header.btn:hover {
+	background: black;
+}
+
+.header.header-close {
+	min-height: 0px;
+}
+
+.header .headercontent {
+	position: absolute;
+	height: 50px;
+	width: 100%;
+	flex: auto;
+	transition: top;
+	transition-duration: .4s;
+	transition-timing-function: ease;
+	bottom: 0;
 	border-bottom: 1px solid #bbb;
-	background-color: white;
+	padding: 10px;
 	display: flex;
 	flex-direction: row;
-	align-items: center;
+	background: white;
 }
+
+.header.header-close .headercontent {
+	top: -50px;
+}
+
+.header.header-close .tab {
+	z-index: 100;
+	position: absolute;
+	bottom: -43px;
+	left:50%;
+	opacity: 1.0;
+	transition: bottom, opacity;
+    transition-duration: .9s;
+	transition-timing-function: ease;
+    transform: translate(-50%,-50%);
+}
+
+.header .tab {
+	bottom: 0px;
+	opacity: 0;
+}
+
+.header .tab .title {
+	margin-right: 10px;
+	font-weight: bold;
+}
+
+.header .tab button {
+	border-top: none;
+	border-radius: 0px;
+}
+/*
+.header .logo-small {
+	display: none;
+}
+
+
+
+
+.header.header-close {
+	height: 0px;
+	width: 0px;
+	margin: auto;
+	padding:0;
+	background-color: none;
+}
+
+.header.header-close .tab {
+	position: relative;
+	top:13px;
+	z-index: 1000;
+}
+
+
+.header.header-close .tab button {
+	border-top: none;
+	border-radius: 0px 0px 5px 5px; 
+}
+
+
+.header.header-close .logo, 
+.header.header-close .graph-controls {
+	display: none;
+}
+.header.header-close .logo-small {
+	font-weight: bolder;
+	display: inline-block;
+}
+
+
+/*
+.header.header-close {
+	padding: 2px;
+}
+
+.header.header-close h1 {
+	font-size: 12px;
+	font-weight: bolder;
+}
+*/
+
+/*
+.header.header-close {
+	height: 0px;
+	padding: 0px;
+}
+
+.header.header-close .logo-small {
+	display: block;
+}
+
+.header.header-close #no-icon {
+	display: none;
+}
+
+.header.header-close .tab {
+	position: fixed;
+	top: 0;
+    left: 0;
+    top: 0px;
+	left: 50%;
+	z-index: 1000;
+}
+
+.header.header-close .tab button {
+	border-top: none;
+	border-radius: 0px 0px 5px 5px; 
+}
+
+.header.header-close .logo-small {
+	font-weight: bolder;
+}
+*/
+
 
 .graph-controls {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
-	justify-content: center;
 	flex: 1;
 }
 

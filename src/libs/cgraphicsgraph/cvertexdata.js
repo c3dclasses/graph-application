@@ -1,3 +1,5 @@
+import {CGraphicsGraphInstance as cggi} from "./cgraphicsgraph";
+
 export default class CVertexData {
 	constructor(params=null) { 
 		if(params) 
@@ -6,7 +8,9 @@ export default class CVertexData {
 
 	initParams(params) {
 		this.setPos(params.x,params.y);
+		this.setOriginalPos(params.x,params.y);
 		this.setRadius(params.r);
+		this.setOriginalWH(params.w, params.h);
 		this.setLabel("");
 		this.setLabelOffset(0,0);
 		this.setBgColor("#000000");
@@ -24,6 +28,8 @@ export default class CVertexData {
 	}
 
 	setPos(x,y) { this.m_x = x; this.m_y = y;}	
+	setOriginalPos(x,y) { this.m_ox = x; this.m_oy = y;}	
+	setOriginalWH(w,h) { this.m_ow = w; this.m_oh = h;}	
 	setRadius(r) { this.m_r = r;}
 	setBgColor(color) { this.m_bgColor = color;}
 	setFgColor(color) { this.m_fgColor = color;}
@@ -33,6 +39,21 @@ export default class CVertexData {
 	setLabel(label) { this.m_label = label;}
 	setFontType(fontType) { this.m_fontType = fontType;}
 	setFontSize(fontSize) { this.m_fontSize = fontSize;}
+
+	restorePos(w,h) {
+		this.m_x = this.m_ox;
+		this.m_y = this.m_oy;
+		let sw = w/this.m_ow;
+		let sh = h/this.m_oh;
+		this.reposition(sw, sh, w, h);
+	}
+
+	savePos(w,h) {
+		this.m_ox = this.m_x;
+		this.m_oy = this.m_y;
+		this.m_ow = w;
+		this.m_oh = h;
+	}
 
 	reposition(sw, sh, nw, nh) {
 		let x = this.m_x;
@@ -53,9 +74,10 @@ export default class CVertexData {
 		this.m_r = r;
 	}
 
+	getRadius() { return (cggi && cggi.m_properties.m_busevradius) ? cggi.m_properties.m_vradius : this.m_r; }
+
 	draw(cgraphics) { 
-		cgraphics.drawCircle(this.m_x,this.m_y,this.m_r,this.m_bgColor,this.m_stkColor);
-		cgraphics.drawText(this.m_x,this.m_y,this.m_label,this.m_fgColor,this.m_bgColor,
-							this.m_fontSize,this.m_fontType,"","");
+		cgraphics.drawCircle(this.m_x, this.m_y, this.getRadius(), this.m_bgColor, this.m_stkColor);
+		cgraphics.drawText(this.m_x, this.m_y, this.m_label, this.m_fgColor, this.m_bgColor, this.m_fontSize, this.m_fontType, "", "");
 	} // end draw()
 } // end CVertexData

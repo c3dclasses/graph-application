@@ -3,31 +3,33 @@ import SidebarSection from "../sidebarsection/sidebarsection";
 import GraphVertexAndEdgeProperties from "../graphproperties/graphvertexandedgeproperties";
 import GraphProfileProperties from "../graphproperties/graphprofileproperties";
 import { useSelector, useDispatch } from 'react-redux';
-import { GraphApplicationActionsInstance as gaa } from "../../reducers/graphapplicationactions";
-import "./sidebar.css";
+import { GraphApplicationActionsInstance as __ } from "../../reducers/graphapplicationactions";
+import "./leftsidebar.css";
 
-function Sidebar() {
+function LeftSidebar() {
     const bclose = useSelector(state=>state.m_bleftsidebar);
     const dispatch = useDispatch();
     useEffect(()=>{ window.dispatchEvent(new Event("resize"));}, [bclose]);
     useEffect(()=>{ window.dispatchEvent(new Event("resize"));}, [bclose]);
-    let iconClasses = (bclose) ? "glyphicon glyphicon-menu-right" : "glyphicon glyphicon-menu-left";
-    let sidebarClasses = (bclose) ? "sidebarclose" : "";     
+    let iconClasses = (bclose) ? "glyphicon glyphicon-chevron-right" : "glyphicon glyphicon-chevron-left";
+    let leftsidebarClasses = (bclose) ? "leftsidebarclose" : "";     
     return (
-        <aside className={`sidebar ${sidebarClasses}`}>
+        <aside className={`leftsidebar ${leftsidebarClasses}`}>
             <div className="tab">
-                <button onClick={()=>{dispatch(gaa.toggleLeftSidebar())}} className="btn btn-default btn-sm"><span className={iconClasses}></span></button>
+                <button onClick={()=>{dispatch(__.toggleLeftSidebar())}} className="btn btn-default btn-sm"><span className={iconClasses}></span></button>
             </div>        
-            <div className="sidebarcontent">
+            <div className="leftsidebarcontent">
+                {/*
                 <SidebarSection headerName="Graph Properties">
                     <GraphVertexAndEdgeProperties />
                 </SidebarSection>
                 <SidebarSection headerName="Profile Sequences">
                     <GraphProfileProperties />
                 </SidebarSection>
+                */}
             </div>
         </aside>
     );
 }
 
-export default Sidebar;
+export default LeftSidebar;

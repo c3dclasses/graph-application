@@ -1,4 +1,4 @@
-.sidebar {
+.leftsidebar {
     background: white; 
     min-width: 300px;
     transition: min-width;
@@ -8,11 +8,11 @@
     position: relative;
 }    
 
-.sidebar.sidebarclose {
+.leftsidebar.leftsidebarclose {
     min-width: 0px;
 }
 
-.sidebar .sidebarcontent {
+.leftsidebar .leftsidebarcontent {
     position: absolute;
     width: 300px;
     height: 100%;
@@ -26,11 +26,11 @@
     padding: 10px;
 }
 
-.sidebar.sidebarclose .sidebarcontent {
+.leftsidebar.leftsidebarclose .leftsidebarcontent {
     left: -300px;
 }
 
-.sidebar .tab {
+.leftsidebar .tab {
     z-index: 100;
     position: absolute;
     right: -32px;
@@ -38,7 +38,7 @@
     line-height: 1em;
 }
 
-.sidebar .tab button {
+.leftsidebar .tab button {
     border-left: none;
     border-radius: 0px;
     background: white;
@@ -46,10 +46,10 @@
     border-bottom-right-radius: 3px;
 }
 
-.sidebar .tab button:hover {
+.leftsidebar .tab button:hover {
     background: white;
 }
 
-.sidebar .tab button:active {
+.leftsidebar .tab button:active {
     background: white;
 }

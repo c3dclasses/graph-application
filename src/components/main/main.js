@@ -1,13 +1,13 @@
 import React from "react";
 import Content from "../content/content";
-import Sidebar from "../sidebar/sidebar";
+import LeftSidebar from "../leftsidebar/leftsidebar";
 import RightSidebar from "../rightsidebar/rightsidebar";
 import "./main.css";
 
 export default function Main() {
     return (
         <main>
-            <Sidebar/>
+            <LeftSidebar/>
             <Content />
             <RightSidebar />
         </main>

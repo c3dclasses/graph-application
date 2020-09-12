@@ -3,6 +3,11 @@ main {
     flex-direction: row;
     width: 100%;
     flex: auto;
-    height: calc(100% - 50px);
+    height: 100%;
     overflow: hidden;
+}
+
+.main-resize {
+    height: calc(100% - 50px);
+    
 }

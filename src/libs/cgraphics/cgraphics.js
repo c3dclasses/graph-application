@@ -35,10 +35,13 @@ class CGraphics {
 
 	// other
 	//saveScreenShot() { window.Canvas2Image.saveAsPNG(this.m_canvas); }
-
-	saveScreenShot() {
-		let pdf = new window.jsPDF();
-		pdf.addImage(this.m_canvas.toDataURL(),'jpeg',0,0,160,180);
+	saveScreenshot() {
+		let pdf = new window.jsPDF({
+			orientation: 'landscape',
+			unit: 'px',
+			format: [this.m_canvas.width, this.m_canvas.height]
+		  });
+		pdf.addImage(this.m_canvas.toDataURL(),'jpeg',0,0, this.m_canvas.width, this.m_canvas.height,);
 		pdf.save('download.pdf');
 	}
 	
@@ -105,7 +108,83 @@ class CGraphics {
 		this.m_graphics.lineWidth = w;
 		this.m_graphics.stroke();
 	}
-} // end CGraphics
 
+
+	////////////////////////////////////////
+	// other
+	
+	drawGrid(rows, cols, w, color, padding) { 
+		//this.drawGridBorder(rows, cols, w, color, padding); 
+		this.drawGridPoints(rows, cols, w, color, padding); 
+	}
+
+	drawGridPoints(rows, cols, w, color, padding) {
+		if(rows <= 0 || cols <= 0)
+			return;
+		console.log(rows, cols, w, color, padding)
+		console.log("draw grid points")
+		let d = this.getWH();
+		d.w -= padding*2;
+		d.h -= padding*2;
+		const x1 = padding;
+		const y1 = padding;
+		const x2 = x1 + d.w;
+		const y2 = y1 + d.h;
+		this.m_graphics.setLineDash([5, 3]);
+		this.drawLine(x1,y1,x2,y1,w,color); // top side
+		this.drawLine(x1,y2,x2,y2,w,color); // bottom side
+		this.drawLine(x1,y1,x1,y2,w,color); // left side
+		this.drawLine(x2,y1,x2,y2,w,color); // right side
+		this.m_graphics.setLineDash([]);
+		cols = d.w / cols;
+		rows = d.h / rows;
+		for(let x=x1+cols*0.5; x<d.w; x+=cols)
+			for(let y=y1+rows*0.5; y<d.h; y+=rows)
+				this.drawCircle(x,y,5,color,color);	
+		return;
+	}
+
+	getGridRowColPosFromPos = function(x, y, nrows, ncols, padding, bcenter) {
+		if(nrows <= 0 || ncols <= 0)
+			return null;
+		let d = this.getWH();
+		x -= padding;
+		y -= padding;
+		d.w -= padding * 2;
+		d.h -= padding * 2;
+		let w = Math.floor(d.w / ncols);
+		let h = Math.floor(d.h / nrows);
+		let icol = Math.floor(x / w);
+		let irow = Math.floor(y / h); 
+		x = padding + (icol * w);
+		y = padding + (irow * h);
+		if(bcenter) {
+			x += w*0.5;
+			y += h*0.5;
+		}
+		return {x:x,y:y};
+	}
+	
+	getGridRowColPos = function(irow, icol, nrows, ncols, padding, bcenter) {
+		if(nrows <= 0 || ncols <= 0 || irow < 0 || icol < 0)
+			return null;
+		let d = this.getWH();
+		let x = padding;
+		let y = padding;
+		d.w -= padding * 2;
+		d.h -= padding * 2;
+		let w = Math.floor(d.w / ncols);
+		let h = Math.floor(d.h / nrows);
+		x += (icol * w);
+		y += (irow * h);
+		if(bcenter) {
+			x += w*0.5;
+			y += h*0.5;
+		}
+		return {x:x,y:y};
+	}
+	
+
+} // end CGraphics
 
 export default CGraphics;

@@ -1,13 +1,6 @@
 import CGraphVertex from "../cgraph/cgraphvertex";
 import { median } from "../utility/utility";
 
-// constants
-CGraphVertex.prototype.DEG = 0;
-CGraphVertex.prototype.IMIN = 1;
-CGraphVertex.prototype.EMIN = 2;
-CGraphVertex.prototype.IMAX = 3;
-CGraphVertex.prototype.EMAX = 4;
-
 // functions to attach to the CGraphVertex objects
 CGraphVertex.prototype.draw = function(cgraphics) {
 	let label = [];
@@ -15,15 +8,16 @@ CGraphVertex.prototype.draw = function(cgraphics) {
 	let i = this.getIndex();
 
 	// determine the label type
-	if(this.m_cgraph.m_vlabeltype === "letters") 
+	if(this.m_cgraph.m_properties.m_vlabeltype === "letters") 
 		label.push(window._n2l[i]); // convert the index to a letter
-	else if(this.m_cgraph.m_vlabeltype === "numbers") 
+	else if(this.m_cgraph.m_properties.m_vlabeltype === "numbers") 
 		label.push(i); // just use the index
 	
-	if(this.m_cgraph.m_vprofiletype > -1 && this.m_profiles) 
-		label.push("" + this.m_profiles[this.m_cgraph.m_vprofiletype]);
-	
-	console.log(this.m_cgraph.m_vprofiletype);
+	if(this.m_cgraph.m_properties.m_vprofiletype && this.m_profiles) {
+		for(let id in this.m_cgraph.m_properties.m_vprofiletype) {
+			label.push("" + this.m_profiles[id]);
+		}
+	}
 
 	// set the label 
 	data.setLabel(label.join("-"));

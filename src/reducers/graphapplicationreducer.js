@@ -1,151 +1,123 @@
 import GraphApplicationState from "./graphapplicationstate";
-import { GraphApplicationActionsInstance as gaa } from "./graphapplicationactions";
-import CGraphicsGraph from "../libs/cgraphicsgraph/cgraphicsgraph";
-import "../libs/cgraphicsgraph/cgraphicsgraph.prototype";
+import { GraphApplicationActionsInstance as __ } from "./graphapplicationactions";
+import { CGraphicsGraphInstance } from "../libs/cgraphicsgraph/cgraphicsgraph";
+import { ProfileSequences } from "../libs/cgraphicsgraph/cgraphicsgraphvertex"; 
 
+let cgraphicsgraph = null;
 export default function GraphApplicationReducer(state=GraphApplicationState, action) {
     let newstate = {...state};
     switch(action.type) {
-        case gaa.INIT:
-            window.cgraphicsgraph = new CGraphicsGraph(action.data);
-            newstate.m_cgraphicsgraph = window.cgraphicsgraph;
-            newstate.m_cgraphicsgraph.loadFromLocalStorage();
-            newstate.m_bshowloadspinner = false;    
+        case __.INIT:
+            newstate = initGraphApplication(action.data, newstate);
         break;
-        case gaa.LAYOUT:
-            newstate.m_cgraphicsgraph.layoutVerticesInCircle();
+        case __.LAYOUT:
+            cgraphicsgraph.layoutVerticesInCircle();
         break;
-        case gaa.GRID:
-           newstate.m_bshowgrid = newstate.m_cgraphicsgraph.toggleGridLayout();   
+        case __.CLEAR:
+            cgraphicsgraph.clearAll();
         break;
-        case gaa.GRIDROW:
-            newstate.m_cgraphicsgraph.setGridRows(action.data); 
-            newstate.m_cgraphicsgraph.drawAnimationFrame();
+        case __.SCREENSHOT:
+            cgraphicsgraph.saveScreenshot();
         break;
-        case gaa.GRIDCOL:
-            newstate.m_cgraphicsgraph.setGridColumns(action.data);
-            newstate.m_cgraphicsgraph.drawAnimationFrame();
+
+        case __.LABELTYPE:
+            cgraphicsgraph.setProperties({m_vlabeltype:action.data});
+            newstate.m_vlabeltype = action.data;
+        break;
+
+        case __.PROFILETYPE:
+            newstate.m_vprofiletype = {...newstate.m_vprofiletype};
+            if(action.data.checked)
+                newstate.m_vprofiletype[action.data.id] = true;
+            else delete newstate.m_vprofiletype[action.data.id];
+            console.log(newstate.m_vprofiletype)
+            cgraphicsgraph.setProperties({m_vprofiletype:newstate.m_vprofiletype});
+            //newstate.m_vprofiletype[action.data] = action.data;
+        break;
+
+        case __.TOGGLEHEADER:
+            if(cgraphicsgraph) {
+                newstate.m_bheader = !newstate.m_bheader; 
+                cgraphicsgraph.setProperties({m_bheader:newstate.m_bheader});     
+            }
         break;
         
-        case gaa.LABELTYPE:
-            newstate.m_cgraphicsgraph.setLabelType(action.data);
-            newstate.m_cgraphicsgraph.drawAnimationFrame();
-            newstate.m_labeltype = action.data;
-            localStorage.setItem("label-type", action.data);
-        break;
-        case gaa.PROFILETYPE:
-            newstate.m_cgraphicsgraph.setProfileType(action.data);
-            newstate.m_cgraphicsgraph.drawAnimationFrame();
-            newstate.m_profiletype = action.data;
-            localStorage.setItem("profile-type", action.data);
-        break;
-        case gaa.CLEAR:
-            newstate.m_cgraphicsgraph.clearAll();
-        break;
-        case  gaa.SCREENSHOT:
-            newstate.m_cgraphicsgraph.screenshot();
-        break;
-        case gaa.GETPROPERTIES:
-            newstate.m_numvertices = newstate.m_cgraphicsgraph.getNumOfVertices();
-            newstate.m_vertices = newstate.m_cgraphicsgraph.toStringVertices(" ");
-            newstate.m_numedges = newstate.m_cgraphicsgraph.getNumOfEdges(false);
-            newstate.m_edges = newstate.m_cgraphicsgraph.toStringEdges(" ","\n");
-            updateProfiles(newstate);
-            //console.log("saving to local storage")
-            newstate.m_cgraphicsgraph.saveToLocalStorage();
+        case __.TOGGLERIGHTSIDEBAR:
+            if(cgraphicsgraph) {
+                newstate.m_brightsidebar = !newstate.m_brightsidebar; 
+                cgraphicsgraph.setProperties({m_brightsidebar:newstate.m_brightsidebar});     
+            }
         break;
 
-        case gaa.SETPROPERTIES:
-              if(action.data.type === "v")
-                updateVertices(newstate, action.data.vertices);
-            else if(action.data.type === "e")
-                updateEdges(newstate, action.data.edges);
-            
+        case __.TOGGLELEFTSIDEBAR:
+            if(cgraphicsgraph) {
+                newstate.m_bleftsidebar = !newstate.m_bleftsidebar; 
+                cgraphicsgraph.setProperties({m_bleftsidebar:newstate.m_bleftsidebar});     
+            }
         break;
 
-        case gaa.GETPROFILE:
+        case __.RESTOREPOSITION:
+            if(cgraphicsgraph)
+                cgraphicsgraph.restoreVertexPositions();
+        break;
+
+        case __.SAVEPOSITION:
+            if(cgraphicsgraph)
+                cgraphicsgraph.saveVertexPositions();
+        break;
+
+        case __.TOGGLEGRID:
+            if(cgraphicsgraph) {
+                newstate.m_bshowgrid = !newstate.m_bshowgrid; 
+                cgraphicsgraph.setProperties({m_bshowgrid:newstate.m_bshowgrid});     
+            }
+        break;
+
+        case __.SETGRIDROW:
+            newstate.m_ngridrows = action.data;
+            cgraphicsgraph.setProperties({m_ngridrows:newstate.m_ngridrows});     
         break;
         
-        case gaa.SETSHORTPROFILE:
-            newstate.m_profiles = {...newstate.m_profiles};
-            newstate.m_profiles.m_bshort = action.data;
-            localStorage.setItem("m_bshort", action.data);
-        break;
-        
-        case gaa.SETSHOWPROFILE:
-            let sequences = newstate.m_profiles.m_sequences[action.data.index]
-            newstate.m_profiles.m_sequences[action.data.index] = {...sequences};
-            newstate.m_profiles.m_sequences[action.data.index].m_bshow = action.data.bshow;
-            localStorage.setItem("ProfileSequences[" + action.data.index + "].m_bshow", action.data.bshow)
+        case __.SETGRIDCOL:
+            newstate.m_ngridcols = action.data;
+            cgraphicsgraph.setProperties({m_ngridcols:newstate.m_ngridcols});     
         break;
 
-        case gaa.SHOWLOADSPINNER:
-            newstate.m_bshowloadspinner = action.data;
+        case __.EDGEWIDTH:
+            if(cgraphicsgraph) {
+                newstate.m_ewidth = action.data; 
+                cgraphicsgraph.setProperties({m_ewidth:newstate.m_ewidth});     
+            }
         break;
-
-        case gaa.TOGGLERIGHTSIDEBAR:
-            newstate.m_brightsidebar = !newstate.m_brightsidebar; 
-            localStorage.setItem("m_brightsidebar", newstate.m_brightsidebar);
+        case __.VERTEXRADIUS:
+            if(cgraphicsgraph) {
+                newstate.m_vradius = action.data; 
+                cgraphicsgraph.setProperties({m_vradius:newstate.m_vradius});     
+            }
         break;
-
-        case gaa.TOGGLELEFTSIDEBAR:
-            newstate.m_bleftsidebar = !newstate.m_bleftsidebar;
-            localStorage.setItem("m_bleftsidebar", newstate.m_bleftsidebar);
-        break;
-
         default:
-            break;
-
+        break;
     }
     return newstate;
 }
 
-// helper functions
-function updateVertices(newstate, strvertices) {
-    let bupdate = false;
-    if(strvertices) {
-        bupdate = newstate.m_cgraphicsgraph.updateVertices(strvertices.trim().split(" "));
-        newstate.m_vertices = strvertices;
-        if(bupdate) {
-            newstate.m_numvertices = newstate.m_cgraphicsgraph.getNumOfVertices();
-            newstate.m_cgraphicsgraph.drawAnimationFrame();
-        }
-    }
-    else {
-        newstate.m_cgraphicsgraph.clearAll();
-        newstate.m_vertices = "";
-        newstate.m_numvertices = 0;
-    }
-    return bupdate;
-}
+///////////////////////////////
+// reducer helper functions
+function initGraphApplication(data, newstate) {
+    try {
+        newstate.m_bshowloadspinner = true;
+        newstate.m_berror = false;
+        newstate.m_loadspinnermsg = "Initializing the Graph Application...";
+        cgraphicsgraph = CGraphicsGraphInstance;
+        cgraphicsgraph.create(data);
+        window.cgraphicsgraph = cgraphicsgraph;
+        newstate = {...newstate, ...cgraphicsgraph.getProperties()};
+        newstate.m_bshowloadspinner = false;
+    } // end try
+    catch(error) {
+        newstate.m_berror = true;
+        newstate.m_loadspinnermsg = "ERROR (initGraphApplication) - " + error;
+    } // end catch
+    return newstate;
+} // end initGraphApplication()
 
-function updateEdges(newstate, stredges) {
-    let bupdate = false;
-    if(stredges) {
-        let nedges = newstate.m_cgraphicsgraph.parseEdges(stredges);
-        bupdate = newstate.m_cgraphicsgraph.updateEdges(nedges);
-        newstate.m_edges = stredges;
-        if(bupdate) {
-            newstate.m_numedges = newstate.m_cgraphicsgraph.getNumOfEdges(false);
-            newstate.m_cgraphicsgraph.drawAnimationFrame();
-        }
-    }
-    else {
-        newstate.m_cgraphicsgraph.clearAll();
-        newstate.m_edges = "";
-        newstate.m_numedges = 0;
-    }
-    return bupdate;
-}
-
-function updateProfiles(newstate) {
-    let cgraphicsgraph = newstate.m_cgraphicsgraph;
-    let seq = cgraphicsgraph.getSequences();
-    newstate.m_profiles.m_sequences = [...newstate.m_profiles.m_sequences];
-    let sequences = newstate.m_profiles.m_sequences;
-    for(let i=0; i<sequences.length; i++) {
-        sequences[i] = {...sequences[i]};
-        sequences[i].m_long = seq.long[i];
-        sequences[i].m_short = seq.short[i];
-    }
-}

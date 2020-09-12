@@ -17,7 +17,7 @@ class CGraphEdge {
 	getCGraphVertex2() { return this.m_cgraph.getVertexData(this.m_vindex2); } 
 	getCGraph() { return this.m_cgraph; }
 	toString() { return "(" + this.m_vindex1 + "," + this.m_vindex2 + ")=>" + this.getData().toString(); }
-	setMultiEdge(bmultiedge)  {this.m_bmultiedge = bmultiedge; }
+	setMultiEdge(bmultiedge)  { this.m_bmultiedge = bmultiedge; }
 	isMultiEdge() { return this.m_bmultiedge; }
 } // end CGraphEdge
 
