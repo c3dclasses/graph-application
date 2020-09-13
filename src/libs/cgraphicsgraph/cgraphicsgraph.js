@@ -280,25 +280,25 @@ export default class CGraphicsGraph extends CGraph {
 	handleContextMenu(e) {
 		e.preventDefault();
 		let p = this.m_cgraphics.getXYFromClientXY(e.clientX,e.clientY);
+			
 		let cgraphvertex = this.collidePoint2CGraphVertex(p.x,p.y);
-		if(cgraphvertex) {
+		if(cgraphvertex)
 			this.removeVertex(cgraphvertex.getIndex());
-			this.drawAnimationFrame();
-			this.triggerUpdate();
-			return;
-		} // end if
-
+		
 		let cgraphedge = this.collidePoint2CGraphEdge(p.x,p.y);
-		if(cgraphedge) {
+		if(cgraphedge)
 			this.removeMultiEdge(cgraphedge.getVertexIndex1(), cgraphedge.getVertexIndex2());
+	
+		if(cgraphvertex || cgraphedge) {  
 			this.triggerUpdate();
+			this.drawAnimationFrame();
 		}
-		this.drawAnimationFrame();
 	} // end handleContextMenu()
 
 	
 	handleUpdate(cgraphicsgraph) {
 		this.saveToLocalStorage2();
+		this.computeVertexProfiles();
 		this.drawAnimationFrame();
 	}
 
