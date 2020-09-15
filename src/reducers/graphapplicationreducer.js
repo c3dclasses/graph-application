@@ -15,6 +15,13 @@ export default function GraphApplicationReducer(state=GraphApplicationState, act
         break;
         case __.CLEAR:
             cgraphicsgraph.clearAll();
+            let newprofilesequences = [...newstate.m_profilesequences];
+            for(let index=0; index<newprofilesequences.length; index++) {
+                newprofilesequences[index].m_sequence = [];
+            }
+            newstate.m_profilesequences = newprofilesequences;
+            cgraphicsgraph.setProperties({m_profilesequences:newstate.m_profilesequences});      
+            
         break;
         case __.SCREENSHOT:
             cgraphicsgraph.saveScreenshot();
@@ -95,6 +102,31 @@ export default function GraphApplicationReducer(state=GraphApplicationState, act
                 cgraphicsgraph.setProperties({m_vradius:newstate.m_vradius});     
             }
         break;
+        case __.SETSHOWPROFILE:
+            if(cgraphicsgraph) { 
+                let newprofilesequences = [...newstate.m_profilesequences];
+                newprofilesequences[action.data.index].m_bshow = action.data.bshow;
+                newstate.m_profilesequences = newprofilesequences;
+                cgraphicsgraph.setProperties({m_profilesequences:newstate.m_profilesequences});     
+            }
+        case __.UPDATEPROFILESEQUENCES:
+            if(cgraphicsgraph) {
+                cgraphicsgraph.computeVertexProfiles();
+                let newprofilesequences = [...newstate.m_profilesequences];
+                for(let index=0; index<newprofilesequences.length; index++) {
+                    let sequence = cgraphicsgraph.getProfileSequences(index);
+                    if(sequence)
+                        newprofilesequences[index].m_sequence = [...sequence];
+                }
+                newstate.m_profilesequences = newprofilesequences;
+                cgraphicsgraph.setProperties({m_profilesequences:newstate.m_profilesequences});          
+            }
+        break;
+
+        case __.SETSHORTPROFILE:
+            newstate.m_bprofileshort = action.data;
+            cgraphicsgraph.setProperties({m_bprofileshort:newstate.m_bprofileshort});
+        break;
         default:
         break;
     }
@@ -120,4 +152,3 @@ function initGraphApplication(data, newstate) {
     } // end catch
     return newstate;
 } // end initGraphApplication()
-

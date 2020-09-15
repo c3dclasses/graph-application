@@ -23,10 +23,10 @@ function LeftSidebar() {
                 <SidebarSection headerName="Graph Properties">
                     <GraphVertexAndEdgeProperties />
                 </SidebarSection>
+                */}
                 <SidebarSection headerName="Profile Sequences">
                     <GraphProfileProperties />
                 </SidebarSection>
-                */}
             </div>
         </aside>
     );

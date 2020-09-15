@@ -11,6 +11,7 @@ import "./cgraphicsgraphvertex";
 import "./cgraphicsgraphedge";
 import CEdgeData, {CNewEdgeDataLine} from "./cedgedata";
 import CVertexData from "./cvertexdata";
+import { ProfileSequences } from "./cgraphicsgraphvertex"; 
 
 export default class CGraphicsGraph extends CGraph {
 	static m_instance = CGraphicsGraph.m_instance || new CGraphicsGraph();
@@ -280,7 +281,7 @@ export default class CGraphicsGraph extends CGraph {
 	handleContextMenu(e) {
 		e.preventDefault();
 		let p = this.m_cgraphics.getXYFromClientXY(e.clientX,e.clientY);
-			
+
 		let cgraphvertex = this.collidePoint2CGraphVertex(p.x,p.y);
 		if(cgraphvertex)
 			this.removeVertex(cgraphvertex.getIndex());
@@ -298,7 +299,6 @@ export default class CGraphicsGraph extends CGraph {
 	
 	handleUpdate(cgraphicsgraph) {
 		this.saveToLocalStorage2();
-		this.computeVertexProfiles();
 		this.drawAnimationFrame();
 	}
 
@@ -518,7 +518,6 @@ export default class CGraphicsGraph extends CGraph {
 	clearAll() {
 		this.clear();
 		this.drawAnimationFrame();
-		this.triggerUpdate();
 	}
 	
 	computeVertexProfiles() {
@@ -527,6 +526,16 @@ export default class CGraphicsGraph extends CGraph {
 			for(let v in vertices)
 				vertices[v].computeProfile();
 	} 
+
+	getProfileSequences(seqindex) {
+		let vertices = this.getVertices();
+		let profile = [];
+		if(vertices)
+			for(let v in vertices)
+				profile.push(vertices[v].getProfile(seqindex));
+		console.log(profile);
+		return profile;
+	}
 
 	layoutVerticesInGrid() {
 		let vertices = this.getVertices();
@@ -541,7 +550,7 @@ export default class CGraphicsGraph extends CGraph {
 			}
 		}
 	}
-
+	
 	
 	handleMouseUp(e) {
 		if(this.m_bMouseDown === false)

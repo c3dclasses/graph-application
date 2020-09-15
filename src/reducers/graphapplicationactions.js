@@ -25,6 +25,7 @@ class GraphApplicationActions {
         this.VERTEXRADIUS = 0;
         this.SAVEPOSITION = 0;
         this.RESTOREPOSITION = 0;
+        this.UPDATEPROFILESEQUENCES = 0;
         
         // assign a value
         let i = 0;
@@ -51,6 +52,9 @@ class GraphApplicationActions {
     setGridColumns(col){ return { type: this.SETGRIDCOL, data:col }; }
     setVertexRadius(radius) { return { type: this.VERTEXRADIUS, data:radius } }
     setEdgeWidth(width) { return { type: this.EDGEWIDTH, data:width } }
+    setShowProfile(index,bshow) { return { type: this.SETSHOWPROFILE, data:{ index, bshow } }; }
+    updateProfileSequences() { return { type: this.UPDATEPROFILESEQUENCES }; }
+    setShortProfile(bshort) { return {type: this.SETSHORTPROFILE, data:bshort } }
     
     /*
     setProfileType(profiletype) { return { type: this.PROFILETYPE, data:profiletype }; }

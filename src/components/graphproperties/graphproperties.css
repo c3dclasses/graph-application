@@ -25,7 +25,14 @@ textarea {
   padding: 5px;
 } 
 
+.profile-sequence {
+  margin: 1px;
+}
 
+.profile-section {
+  display: flex;
+  flex-direction: column;
+}
 
 .profile-controls {
   display: flex;

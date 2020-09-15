@@ -5,12 +5,14 @@ import Header from "../header/header";
 import Main from "../main/main";
 import LoadSpinner from "../loadspinner/loadspinner";
 import "./app.css";
-//import {handleCGraphicsGraphUpdate, handleCGraphicsGraphLoad} from "../../libs/cgraphicsgraph/cgraphicsgraph";
+import {handleCGraphicsGraphUpdate, handleCGraphicsGraphLoad} from "../../libs/cgraphicsgraph/cgraphicsgraph";
 
 export default function App(){
     const dispatch = useDispatch();	
+    
     useEffect(()=>{ 
         dispatch(gaa.init(document.getElementById("graph")));
+        handleCGraphicsGraphUpdate(function(){dispatch(gaa.updateProfileSequences());});
     },[]);
 
     return (
