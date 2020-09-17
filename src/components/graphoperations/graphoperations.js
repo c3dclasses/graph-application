@@ -27,7 +27,7 @@ export default function GraphOperations() {
                 <button name="screenshot"  title="screenshot" onClick={()=>{dispatch(__.saveScreenshot());}} type="button" className="btn btn-default btn-sm" aria-label="Left Align">
                     <span name="screenshot" className="glyphicon glyphicon-picture" aria-hidden="true"></span>
                 </button>
-
+            {/*
                 <button name="restore-position"  title="restore-position" onClick={()=>{dispatch(__.restorePosition());}} type="button" className="btn btn-default btn-sm" aria-label="Left Align">
                     <span name="restore-position" className="glyphicon glyphicon-refresh" aria-hidden="true"></span>
                 </button>
@@ -35,7 +35,7 @@ export default function GraphOperations() {
                 <button name="save-position"  title="save-position" onClick={()=>{dispatch(__.savePosition());}} type="button" className="btn btn-default btn-sm" aria-label="Left Align">
                     <span name="restore-position" className="glyphicon glyphicon-save" aria-hidden="true"></span>
                 </button>
-
+            */}
 
             </div>
             <div className="menu btn-group op2 graph-operations">         
@@ -93,6 +93,7 @@ export default function GraphOperations() {
                 </button>
             </div>
             */}
+            {/*
             <div className="graph-options grid-ops btn-group op3 graph-operations">
                 <button name="toggleGridLayout"  title="grid" onClick={()=>{dispatch(__.toggleGrid());}} type="button" className="btn btn-default btn-sm" aria-label="Left Align">
                     <span name="toggleGridLayout" className="glyphicon glyphicon-th" aria-hidden="true"></span>
@@ -109,6 +110,7 @@ export default function GraphOperations() {
                 </> : (<></>)
                 }
             </div>
+            */}
         </div>
 
     );

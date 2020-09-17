@@ -11,14 +11,35 @@ export default function GraphProfileProperties() {
     
     return (
         <div className="profile-section">
-            <div className="profile-controls">
-                {
-                    profilesequences.map((sequence, i)=>(
-                        <div class="profile-sequence" key={i}>
-                             <b>{sequence.m_shortname}:</b> <input type="checkbox" onChange={(e)=>{dispatch(gaa.setShowProfile(i, e.target.checked))}} checked={sequence.m_bshow}/>
-                        </div>
-                    ))
-                }
+            <div className="btn-group profile-controls">
+                <button className="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <b>Profile</b> <span className="caret"></span>
+                </button>
+                <ul className="dropdown-menu">
+                    {profilesequences.map((sequence, i) => {
+                        return (
+                            <li className="profile" key={i}>                                
+                                <>
+                                    <input 
+                                        type="checkbox" 
+                                        value={i} 
+                                        name={sequence.m_shortname} 
+                                        onChange={(e)=>{dispatch(gaa.setShowProfile(i, e.target.checked))}} 
+                                        checked={sequence.m_bshow}
+                                    />
+                                    <span>{sequence.m_shortname}</span>
+                                </>
+                            </li>
+                        )
+                    })}
+                </ul>
+                <div id="short-notation" className="short-notation">
+                    <b>short: </b>
+                    <input type="checkbox" 
+                        onChange={(e)=>{dispatch(gaa.setShortProfile(e.target.checked));}} 
+                        checked={bprofileshort} 
+                    />
+                </div>
             </div>
             <div className="profile-output">
                 {
@@ -31,10 +52,6 @@ export default function GraphProfileProperties() {
                     ))
                 }   
             </div>
-            <div id="profile-short-notation">
-                <b>short: </b>
-                <input type="checkbox" onChange={(e)=>{dispatch(gaa.setShortProfile(e.target.checked));}} checked={bprofileshort} />
-            </div><br />
         </div>       
     );
 } // end GraphProfileProperties
@@ -56,7 +73,7 @@ function toJSXSequence(seqinfo, bshort) {
         short[key]++;
     }
     
-    console.log("short: ", short)
+    //console.log("short: ", short)
     //return <span className="degree"></span>;
     
     let degs = Object.keys(short).sort((a,b)=>b-a);

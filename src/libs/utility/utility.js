@@ -53,7 +53,7 @@ export function handleEvent(eventname, fnhandler) {
 export function median(values) {
 	if(!values||values.length<=0)
 		return 0;
-   // values.sort(function(a,b) {return a - b;});
+   	values.sort(function(a,b) {return a - b;});
     var half = Math.floor(values.length/2);
     return (values.length % 2)  ? values[half] : (values[half-1] + values[half]) / 2.0;
 }

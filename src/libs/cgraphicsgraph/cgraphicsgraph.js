@@ -20,6 +20,7 @@ export default class CGraphicsGraph extends CGraph {
 		this.draw = this.draw.bind(this);
 		this.m_numdrawcalls = 0;
 		this.m_bcreated = false;
+		this.m_version = 5.6;
 		this.m_bstoregraph = true;
 		this.m_properties = null;
 		this.loadFromLocalStorage();
@@ -70,7 +71,7 @@ export default class CGraphicsGraph extends CGraph {
 
 	// label and profile type
 	//setLabelType(labeltype) { this.m_properties.m_vlabeltype = labeltype; }
-	//setProfileType(profiletype) { this.m_properties.m_vprofiletype = profiletype; }
+	//setProfileType(profiletype) { this.m_properties. = profiletype; }
 	//setVertexRadius(radius) { this.m_properties.m_vradius = radius;}
 	//setEdgeWidth(width) { this.m_properties.m_ewidth = width;}
 	
@@ -161,9 +162,13 @@ export default class CGraphicsGraph extends CGraph {
 	
 	drawVertices() {
 		let vertices = this.getVertices();
-		if(vertices)
-			for(let v in vertices)
+		if(vertices) {
+			let i=0;
+			for(let v in vertices) {
+				vertices[v].setDrawIndex(i++);
 				vertices[v].draw(this.m_cgraphics);
+			}
+		} // end if
 		return;
 	} // end drawVertices()
 	
@@ -386,9 +391,18 @@ export default class CGraphicsGraph extends CGraph {
 		if(properties === "")
 			return;
 		properties = JSON.parse(properties);
-		if(properties && properties.m_vdata)
+		if(!properties)
+			return;
+
+		if(!properties.m_version || this.m_version > properties.m_version) {
+			localStorage.removeItem("CGraphicsGraph");
+			this.m_properties = properties;
+			this.setProperties({m_version:this.m_version});
+			return;
+		}
+		else if(properties.m_vdata)
 			this.loadFromGraphData(properties.m_vdata, properties.m_edata);
-		console.log(properties);
+		
 		this.m_properties = properties;
 		return;
 	}
@@ -420,6 +434,7 @@ export default class CGraphicsGraph extends CGraph {
 			else cedgedata.loadParams(edges_data[i])
 			this.addMultiEdge(edges[i][0], edges[i][1], cedgedata);
 		} // end for
+		this.computeVertexProfiles();
 		this.triggerLoad();
 		this.triggerUpdate();
 		return true;
@@ -431,7 +446,6 @@ export default class CGraphicsGraph extends CGraph {
 
 	
 	initDefaults2() {
-		alert("init defaults 2");
 		this.setProperties({
 			m_bshowgrid:false,
 			m_ngridrows:3,

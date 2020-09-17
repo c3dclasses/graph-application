@@ -8,7 +8,9 @@ export default class CGraphVertex {
 		this.setData(vdata);
 	} // end init()
 	setIndex(index) { this.m_index = index; }
+	setDrawIndex(drawindex) { this.m_drawindex = drawindex; }
 	getIndex() { return this.m_index; }
+	getDrawIndex() { return this.m_drawindex; }
 	getDegree() { var indices = this.getIndices(); return (!indices) ? 0 : indices.length; }
 	getEdges() { return this.m_cgraph.getVertexEdges(this.m_index); }
 	getIndices() { return Object.keys(this.getEdges()); }

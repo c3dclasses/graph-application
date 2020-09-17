@@ -6,19 +6,21 @@ CGraphVertex.prototype.draw = function(cgraphics) {
 	let label = [];
 	let data = this.getData();
 	let i = this.getIndex();
+	let di = this.getDrawIndex();
 
 	// determine the label type
 	if(this.m_cgraph.m_properties.m_vlabeltype === "letters") 
-		label.push(window._n2l[i]); // convert the index to a letter
+		label.push(window._n2l[di]); // convert the index to a letter
 	else if(this.m_cgraph.m_properties.m_vlabeltype === "numbers") 
-		label.push(i); // just use the index
+		label.push(di); // just use the index
 	
+
 	if(this.m_cgraph.m_properties.m_vprofiletype && this.m_profiles) {
 		for(let id in this.m_cgraph.m_properties.m_vprofiletype) {
 			label.push("" + this.m_profiles[id]);
 		}
 	}
-
+	
 	// set the label 
 	data.setLabel(label.join("-"));
 	
@@ -39,10 +41,12 @@ CGraphVertex.prototype.computeProfile = function() {
 	let ifreq = deg;
 	let efreq = 0;
 	let degtypes = {};
+	let degrees = []
 	if(edges && deg > 0) {
 		for(let vindex in edges) {
 			let cgraphvertex = this.m_cgraph.getCGraphVertex(vindex);
 			let deg2 = cgraphvertex.getDegree();
+			degrees.push(deg2)
 			isum += deg2;
 			esum += deg2;
 			if(!degtypes || !degtypes[deg2]) 
@@ -70,13 +74,16 @@ CGraphVertex.prototype.computeProfile = function() {
 
 	let ndegrees = Object.keys(degtypes);
 	let ediv = ndegrees.length;
-	
+	let emed = median(degrees);
+
 	if(!degtypes[deg])
 		degtypes[deg] = 0;
 	degtypes[deg]++;
+	degrees.push(deg);
 	
 	ndegrees = Object.keys(degtypes);
 	let idiv = ndegrees.length;
+	let imed = median(degrees);
 	/*
 	this.m_profiles.push(efre);
 	this.m_profiles.push(ifre);
@@ -90,8 +97,8 @@ CGraphVertex.prototype.computeProfile = function() {
 	this.m_profiles.push(efreq);
 	this.m_profiles.push(idiv);
 	this.m_profiles.push(ediv);
-	this.m_profiles.push(0);
-	this.m_profiles.push(0);
+	this.m_profiles.push(imed);
+	this.m_profiles.push(emed);
 	return;
 }
 
