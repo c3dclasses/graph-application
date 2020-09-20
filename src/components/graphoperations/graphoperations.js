@@ -69,17 +69,6 @@ export default function GraphOperations() {
                         })}
                     </ul>
                 </div>
-
-                
-
-                    {/*
-                    <select value={profiletype} onChange={(e)=>{dispatch(__.profileType(parseInt(e.currentTarget.value)));}} className="custom-select custom-select-lg mb-3">
-                        <option value="-1">none</option>
-                        {sequences.map((sequence, i)=>{ 
-                            return <option key={i} value={i}>{sequence.m_shortname}</option>
-                        })}
-                    </select>
-                    */} 
             </div>
             {/*
             <div className="menu btn-group op2 graph-operations">         
@@ -93,24 +82,38 @@ export default function GraphOperations() {
                 </button>
             </div>
             */}
-            {/*
+            {
             <div className="graph-options grid-ops btn-group op3 graph-operations">
                 <button name="toggleGridLayout"  title="grid" onClick={()=>{dispatch(__.toggleGrid());}} type="button" className="btn btn-default btn-sm" aria-label="Left Align">
                     <span name="toggleGridLayout" className="glyphicon glyphicon-th" aria-hidden="true"></span>
                 </button>
                 {(bshowgrid)?<>
                 <button className="btn btn-default btn-sm">
-                    <label>Rows:</label>&nbsp;
-                    <input type="number" value={ngridrows} onChange={(e)=>{dispatch(__.setGridRows(e.target.value));}} className="" name="nrows" min="1" max="1000" placeholder="" />
+                    <label>Size:</label>&nbsp;
+                    <input 
+                        type="number" 
+                        value={parseInt(ngridrows)} 
+                        onChange={(e)=>{
+                            dispatch(__.setGridRows(e.target.value));
+                            dispatch(__.setGridColumns(e.target.value));
+                        }} 
+                        className="" 
+                        name="nrows" 
+                        min="1" 
+                        max="1000" 
+                        placeholder="" 
+                    />
                 </button>
+                    {/*
                 <button className="btn btn-default btn-sm">
                     <label>Columns:</label>&nbsp;
                     <input type="number" value={ngridcols} onChange={(e)=>{dispatch(__.setGridColumns(e.target.value));}} className="" name="ncols" min="1" max="1000" placeholder="" />
                 </button>
+                    */}
                 </> : (<></>)
                 }
             </div>
-            */}
+            }
         </div>
 
     );

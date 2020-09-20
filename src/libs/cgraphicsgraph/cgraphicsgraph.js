@@ -11,7 +11,6 @@ import "./cgraphicsgraphvertex";
 import "./cgraphicsgraphedge";
 import CEdgeData, {CNewEdgeDataLine} from "./cedgedata";
 import CVertexData from "./cvertexdata";
-import { ProfileSequences } from "./cgraphicsgraphvertex"; 
 
 export default class CGraphicsGraph extends CGraph {
 	static m_instance = CGraphicsGraph.m_instance || new CGraphicsGraph();
@@ -20,12 +19,13 @@ export default class CGraphicsGraph extends CGraph {
 		this.draw = this.draw.bind(this);
 		this.m_numdrawcalls = 0;
 		this.m_bcreated = false;
-		this.m_version = 5.6;
+		this.m_version = 6.32;
 		this.m_bstoregraph = true;
 		this.m_properties = null;
 		this.loadFromLocalStorage();
 		if(!this.m_properties) {
 			this.m_properties = {};
+			this.setProperties({m_version:this.m_version});
 			this.initDefaults();
 			this.initDefaults2();
 		}
@@ -396,8 +396,7 @@ export default class CGraphicsGraph extends CGraph {
 
 		if(!properties.m_version || this.m_version > properties.m_version) {
 			localStorage.removeItem("CGraphicsGraph");
-			this.m_properties = properties;
-			this.setProperties({m_version:this.m_version});
+			this.m_properties = null;
 			return;
 		}
 		else if(properties.m_vdata)
@@ -458,8 +457,8 @@ export default class CGraphicsGraph extends CGraph {
 	}
 	
 	getGridCellPosFromPos(p) {		
-		return this.m_cgraphics.getGridRowColPosFromPos(p.x, p.y, 
-			this.m_properties.m_ngridrows, this.m_properties.m_ngridcols, this.m_properties.m_gridpadding, true);
+		let gridsize = parseInt(this.m_properties.m_ngridrows) + 1;
+		return this.m_cgraphics.getGridRowColPosFromPos(p.x, p.y, gridsize, gridsize, this.m_properties.m_gridpadding, true);
 	}
 
 	toggleGridLayout() {
@@ -469,7 +468,8 @@ export default class CGraphicsGraph extends CGraph {
 	}
 
 	getGridRowColPos(irow, icol, bcenter) {
-		return this.m_cgraphics.getGridRowColPos(irow, icol, this.m_properties.m_ngridrows, this.m_properties.m_ngridcols, 
+		let gridsize = parseInt(this.m_properties.m_ngridrows) + 1;
+		return this.m_cgraphics.getGridRowColPos(irow, icol, gridsize, gridsize, 
 			this.m_properties.m_gridpadding, bcenter);
 	}
 
@@ -497,9 +497,15 @@ export default class CGraphicsGraph extends CGraph {
 		this.m_cgraphics.clear(this.m_properties.m_bgcolor, 0.0);
 		this.drawNewEdge();
 		this.drawEdges();
-		if(this.m_properties.m_bshowgrid) {
-			this.m_cgraphics.drawGrid(this.m_properties.m_ngridrows, this.m_properties.m_ngridcols, 
-				this.m_properties.m_gridwidth, this.m_properties.m_gridcolor, this.m_properties.m_gridpadding);
+		let gridsize = parseInt(this.m_properties.m_ngridrows) + 1
+		if(this.m_properties.m_bshowgrid && gridsize > 0) {
+			this.m_cgraphics.drawGrid(
+				gridsize,
+				gridsize,
+				this.m_properties.m_gridwidth, 
+				this.m_properties.m_gridcolor, 
+				this.m_properties.m_gridpadding
+			);
 		}
 		this.drawVertices();
 	} // end drawGraph()

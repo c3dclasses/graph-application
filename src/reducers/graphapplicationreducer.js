@@ -1,7 +1,6 @@
 import GraphApplicationState from "./graphapplicationstate";
 import { GraphApplicationActionsInstance as __ } from "./graphapplicationactions";
 import { CGraphicsGraphInstance } from "../libs/cgraphicsgraph/cgraphicsgraph";
-import { ProfileSequences } from "../libs/cgraphicsgraph/cgraphicsgraphvertex"; 
 
 let cgraphicsgraph = null;
 export default function GraphApplicationReducer(state=GraphApplicationState, action) {

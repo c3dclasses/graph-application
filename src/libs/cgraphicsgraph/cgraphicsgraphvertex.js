@@ -38,8 +38,8 @@ CGraphVertex.prototype.computeProfile = function() {
 	let emin = (deg <= 0) ? 0 : this.m_cgraph.getNumOfVerticesCreated();
 	let esum = 0;
 	let isum = deg;
-	let ifreq = deg;
-	let efreq = 0;
+	//let ifreq = deg;
+	//let efreq = 0;
 	let degtypes = {};
 	let degrees = []
 	if(edges && deg > 0) {
@@ -56,10 +56,10 @@ CGraphVertex.prototype.computeProfile = function() {
 			if(deg2<emin) emin = deg2;
 			if(deg2>imax) imax = deg2;
 			if(deg2>emax) emax = deg2;
-			efreq = Math.max(efreq,deg2);
+			//efreq = Math.max(efreq,deg2);
 		} // end for
 	} // end if
-	ifreq = Math.max(ifreq, efreq);
+	//ifreq = Math.max(ifreq, efreq);
 
 	this.m_profiles = [];
 	this.m_profiles.push(deg);
@@ -69,12 +69,19 @@ CGraphVertex.prototype.computeProfile = function() {
 	this.m_profiles.push(emax);
 	this.m_profiles.push(isum);
 	this.m_profiles.push(esum);
-	this.m_profiles.push((deg>0) ? (isum/(deg+1)) : 0);
-	this.m_profiles.push((deg>0) ? (esum/deg) : 0);
-
+	let iavg = (deg>0) ? (isum/(deg+1)) : 0;
+	let eavg = (deg>0) ? (esum/deg) : 0
+	this.m_profiles.push(iavg);
+	this.m_profiles.push(eavg);
+	
 	let ndegrees = Object.keys(degtypes);
+	let ndegfreq = Object.values(degtypes);
 	let ediv = ndegrees.length;
 	let emed = median(degrees);
+	ndegfreq.sort(function(a,b) {return b - a;});
+	let efreq =  (ndegfreq.length>0) ? ndegfreq[0] : 0;
+	
+	//console.log("ndegfreq1:", ndegfreq);
 
 	if(!degtypes[deg])
 		degtypes[deg] = 0;
@@ -82,8 +89,14 @@ CGraphVertex.prototype.computeProfile = function() {
 	degrees.push(deg);
 	
 	ndegrees = Object.keys(degtypes);
+	ndegfreq = Object.values(degtypes);
 	let idiv = ndegrees.length;
 	let imed = median(degrees);
+
+	ndegfreq.sort(function(a,b) {return b - a;});
+	//console.log("ndegfreq2:", ndegfreq);
+	let ifreq = (ndegfreq.length>0) ? ndegfreq[0] : 0;
+	
 	/*
 	this.m_profiles.push(efre);
 	this.m_profiles.push(ifre);
@@ -99,6 +112,9 @@ CGraphVertex.prototype.computeProfile = function() {
 	this.m_profiles.push(ediv);
 	this.m_profiles.push(imed);
 	this.m_profiles.push(emed);
+	this.m_profiles.push(imax-imin);
+	this.m_profiles.push(emax-emin);
+	this.m_profiles.push(deg-eavg);
 	return;
 }
 
@@ -107,7 +123,7 @@ CGraphVertex.prototype.getProfiles = function() { return this.m_profiles; }
 CGraphVertex.prototype.getProfile = function(i) { return (this.m_profiles) ? this.m_profiles[i] : null; }
 
 export const ProfileSequences = [
-	{m_name: "degree", m_shortname:"deg", m_sequence:[], m_long:"", m_short:"", m_bshow:true},
+	{m_name: "degree", m_shortname:"deg", m_sequence:null, m_long:null, m_short:null, m_bshow:true},
 	{m_name: "inclusive-minimum", m_shortname:"imin", m_sequence:null, m_long:null, m_short:null, m_bshow:true},
 	{m_name: "exclusive-minimum", m_shortname:"emin", m_sequence:null, m_long:null, m_short:null, m_bshow:true},
 	{m_name: "inclusive-maximum", m_shortname:"imax", m_sequence:null, m_long:null, m_short:null, m_bshow:true},
@@ -121,5 +137,8 @@ export const ProfileSequences = [
 	{m_name: "inclusive-diversity", m_shortname:"idiv", m_sequence:null, m_long:null, m_short:null, m_bshow:true},
 	{m_name: "exclusive-diversity", m_shortname:"ediv", m_sequence:null, m_long:null, m_short:null, m_bshow:true},
 	{m_name: "inclusive-median", m_shortname:"imed", m_sequence:null, m_long:null, m_short:null, m_bshow:true},
-	{m_name: "exclusive-median", m_shortname:"emed", m_sequence:null, m_long:null, m_short:null, m_bshow:true}
+	{m_name: "exclusive-median", m_shortname:"emed", m_sequence:null, m_long:null, m_short:null, m_bshow:true},
+	{m_name: "inclusive-range", m_shortname:"iran", m_sequence:null, m_long:null, m_short:null, m_bshow:true},
+	{m_name: "exclusive-range", m_shortname:"eran", m_sequence:null, m_long:null, m_short:null, m_bshow:true},
+	{m_name: "happiness", m_shortname:"hap", m_sequence:null, m_long:null, m_short:null, m_bshow:true}
 ];

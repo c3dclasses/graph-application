@@ -66,8 +66,12 @@ CGraphicsGraph.prototype.drawGraph = function() {
 	this.drawNewEdge();
 	this.drawEdges();
 	if(this.m_properties.m_bshowgrid) {
-		this.m_cgraphics.drawGrid(this.m_properties.m_ngridrows, this.m_properties.m_ngridcols, 
-			this.m_properties.m_gridwidth, this.m_properties.m_gridcolor, this.m_gridpadding);
+		this.m_cgraphics.drawGrid(
+			this.m_properties.m_ngridrows + 2, 
+			this.m_properties.m_ngridcols + 2, 
+			this.m_properties.m_gridwidth, 
+			this.m_properties.m_gridcolor, 
+			this.m_gridpadding);
 	}
 	this.drawVertices();
 } // end drawGraph()

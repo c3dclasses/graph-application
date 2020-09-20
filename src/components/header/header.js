@@ -7,11 +7,12 @@ import { handleCGraphicsGraphLoad } from "../../libs/cgraphicsgraph/cgraphicsgra
 
 function Header() {
     const bclose = useSelector(state=>state.m_bheader);
+    const version = useSelector(state=>state.m_version);
     const dispatch = useDispatch();
     
     let iconClasses = (bclose) ? "glyphicon glyphicon-chevron-down" : "glyphicon glyphicon-chevron-up";
     let headerClasses = (bclose) ? " header-close" : "";
-    let version = "5.0";
+    //let version = "5.0";
 
     useEffect(()=>{ 
         window.dispatchEvent(new Event("resize"));
