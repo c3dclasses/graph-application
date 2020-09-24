@@ -113,9 +113,9 @@ class CGraphics {
 	////////////////////////////////////////
 	// other
 	
-	drawGrid(rows, cols, w, color, padding) { 
+	drawGrid(rows, cols, w, color, padding, bsquared) { 
 		//this.drawGridBorder(rows, cols, w, color, padding); 
-		this.drawGridPoints(rows, cols, w, color, padding); 
+		this.drawGridPoints(rows, cols, w, color, padding, bsquared); 
 	}
 
 	drawGridPoints(rows, cols, w, color, padding) {
@@ -144,24 +144,104 @@ class CGraphics {
 		return;
 	}
 
-	getGridRowColPosFromPos = function(x, y, nrows, ncols, padding, bcenter) {
+	drawGridPoints(rows, cols, w, color, padding, bsquared) {
+		let gridlength=0
+		if(bsquared)
+			cols = rows;
+		if(rows <= 0 || cols <= 0)
+			return;
+		console.log(rows, cols, w, color, padding)
+		console.log("draw grid points")
+		
+		let d = this.getWH();
+		gridlength = d.w>d.h?d.h-padding:d.w-padding;
+		let cx = d.w * 0.5;
+		let cy = d.h * 0.5;
+
+		if(!bsquared) {
+			d.w -= padding*2;
+			d.h -= padding*2;
+		}
+
+		let x1 = padding;
+		let y1 = padding;
+		let x2 = x1 + d.w;
+		let y2 = y1 + d.h;
+		if(bsquared) {
+			x1 = cx - gridlength * 0.5;
+			y1 = cy - gridlength * 0.5;
+			x2 = x1 + gridlength;
+			y2 = y1 + gridlength;
+			d.w = gridlength;
+			d.h = gridlength;
+		}
+		
+		this.m_graphics.setLineDash([5, 3]);
+		this.drawLine(x1,y1,x2,y1,w,color); // top side
+		this.drawLine(x1,y2,x2,y2,w,color); // bottom side
+		this.drawLine(x1,y1,x1,y2,w,color); // left side
+		this.drawLine(x2,y1,x2,y2,w,color); // right side
+		this.m_graphics.setLineDash([]);
+		
+		console.log(d.w,d.h, cols, rows)
+		cols = Math.ceil(d.w / cols);
+		rows = Math.ceil(d.h / rows);
+		console.log(d.w, d.h, cols, rows)
+
+		x1 = x1 + cols * 0.5;
+		y1 = y1 + rows * 0.5;
+		for(let x=x1; x<x1+d.w; x+=cols)
+			for(let y=y1; y<y1+d.h; y+=rows)
+				this.drawCircle(x,y,5,color,color);	
+		return;
+	}
+
+	getGridRowColPosFromPos = function(x, y, nrows, ncols, padding, bcenter, bsquared) {
+		if(bsquared)
+			nrows = ncols;
 		if(nrows <= 0 || ncols <= 0)
 			return null;
 		let d = this.getWH();
+		let gridlength =d.w>d.h?d.h-padding:d.w-padding;	// get the grid length 
+		let cx = d.w * 0.5;	// get the center
+		let cy = d.h * 0.5;
+		
+		// get the position and deminsion of grid
 		x -= padding;
 		y -= padding;
 		d.w -= padding * 2;
 		d.h -= padding * 2;
-		let w = Math.floor(d.w / ncols);
-		let h = Math.floor(d.h / nrows);
-		let icol = Math.floor(x / w);
-		let irow = Math.floor(y / h); 
-		x = padding + (icol * w);
-		y = padding + (irow * h);
-		if(bcenter) {
-			x += w*0.5;
-			y += h*0.5;
+
+		// get the position and deminsion of the squared grid
+		if(bsquared) {
+			x = x - (cx - gridlength*0.5);
+			y = y - (cy - gridlength*0.5);
+			d.w = gridlength;
+			d.h = gridlength;
 		}
+
+		let colw = Math.floor(d.w / ncols);
+		let rowh = Math.floor(d.h / nrows);
+		let icol = Math.floor(x / colw);
+		let irow = Math.floor(y / rowh); 
+
+		x = icol * colw;
+		y = irow * rowh;		
+
+		if(!bsquared) {
+			x += padding;
+			y += padding;
+		}
+		else {
+			x = x + (cx - (gridlength * 0.5));
+			y = y + (cy - (gridlength * 0.5));
+		}
+
+		if(bcenter) {
+			x += colw*0.5;
+			y += rowh*0.5;
+		}
+		
 		return {x:x,y:y};
 	}
 	
@@ -185,6 +265,39 @@ class CGraphics {
 	}
 	
 
+/*
+	drawGridPoints(nrows, cols, w, color, padding) {
+		if(nrows <= 0)
+			return;
+		let d = this.getWH();
+		d.w -= padding*2;
+		d.h -= padding*2;
+		let cx = d.w * 0.5;
+		let cy = d.h * 0.5;
+		let r = 300;	//radius
+	
+		let x1 = cx - r;
+		let y1 = cy - r;
+		let x2 = cx + r;
+		let y2 = cy + r;
+		let rowwidth = x2 - x1;
+	
+		let cellwidth  = Math.ceil(rowwidth/nrows);
+		let cellpos = cellwidth*0.5;
+	
+		this.m_graphics.setLineDash([5, 3]);
+		this.drawLine(x1,y1,x2,y1,w,color); // top side
+		this.drawLine(x1,y2,x2,y2,w,color); // bottom side
+		this.drawLine(x1,y1,x1,y2,w,color); // left side
+		this.drawLine(x2,y1,x2,y2,w,color); // right side
+		this.m_graphics.setLineDash([]);
+			
+		for(let x=x1+cellpos; x<x2; x+=cellwidth)
+			for(let y=y1+cellpos; y<y2; y+=cellwidth)
+				this.drawCircle(x,y,5,color,color);			
+		return;
+	}
+	*/	
 } // end CGraphics
 
 export default CGraphics;
