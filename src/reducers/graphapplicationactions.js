@@ -26,6 +26,7 @@ class GraphApplicationActions {
         this.SAVEPOSITION = 0;
         this.RESTOREPOSITION = 0;
         this.UPDATEPROFILESEQUENCES = 0;
+        this.SETSQUARED = 0;
         
         // assign a value
         let i = 0;
@@ -55,7 +56,7 @@ class GraphApplicationActions {
     setShowProfile(index,bshow) { return { type: this.SETSHOWPROFILE, data:{ index, bshow } }; }
     updateProfileSequences() { return { type: this.UPDATEPROFILESEQUENCES }; }
     setShortProfile(bshort) { return {type: this.SETSHORTPROFILE, data:bshort } }
-    
+    setSquared(bsquared) {return { type: this.SETSQUARED, data:bsquared } }
     /*
     setProfileType(profiletype) { return { type: this.PROFILETYPE, data:profiletype }; }
     getProperties() { return { type: this.GETPROPERTIES } }

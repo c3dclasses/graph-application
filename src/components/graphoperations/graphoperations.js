@@ -12,6 +12,8 @@ export default function GraphOperations() {
     const ngridcols = useSelector(state=>state.m_ngridcols);
     const ewidth = useSelector(state=>state.m_ewidth);
     const vradius = useSelector(state=>state.m_vradius);
+    const bsquared = useSelector(state=>state.m_bsquared);
+   
     const dispatch = useDispatch();	
 
 
@@ -104,17 +106,19 @@ export default function GraphOperations() {
                         placeholder="" 
                     />
                 </button>
-                    {/*
                 <button className="btn btn-default btn-sm">
-                    <label>Columns:</label>&nbsp;
-                    <input type="number" value={ngridcols} onChange={(e)=>{dispatch(__.setGridColumns(e.target.value));}} className="" name="ncols" min="1" max="1000" placeholder="" />
+                    <b>Equidistant:</b>
+                    <input 
+                        id="equi-distant" 
+                        type="checkbox"  
+                        onChange={(e)=>{dispatch(__.setSquared(e.target.checked));}} 
+                        checked={bsquared} 
+                    />
                 </button>
-                    */}
                 </> : (<></>)
                 }
             </div>
             }
         </div>
-
     );
 } // end GraphOperations

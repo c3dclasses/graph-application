@@ -91,3 +91,8 @@
     line-height: 11px;
 
 }
+
+#equi-distant {
+    width:inherit;
+    margin: 0;
+}

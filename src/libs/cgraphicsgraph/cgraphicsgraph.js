@@ -19,7 +19,7 @@ export default class CGraphicsGraph extends CGraph {
 		this.draw = this.draw.bind(this);
 		this.m_numdrawcalls = 0;
 		this.m_bcreated = false;
-		this.m_version = 6.32;
+		this.m_version = 6.34;
 		this.m_bstoregraph = true;
 		this.m_properties = null;
 		this.loadFromLocalStorage();
@@ -450,6 +450,7 @@ export default class CGraphicsGraph extends CGraph {
 			m_ngridrows:3,
 			m_ngridcols:3,
 			m_gridpadding:20,
+			m_bsquared:true,
 			m_gridwidth:1,
 			m_gridheight:1,
 			m_gridcolor:"#5e5e5e"
@@ -458,7 +459,7 @@ export default class CGraphicsGraph extends CGraph {
 	
 	getGridCellPosFromPos(p) {		
 		let gridsize = parseInt(this.m_properties.m_ngridrows) + 1;
-		return this.m_cgraphics.getGridRowColPosFromPos(p.x, p.y, gridsize, gridsize, this.m_properties.m_gridpadding, true);
+		return this.m_cgraphics.getGridRowColPosFromPos(p.x, p.y, gridsize, gridsize, this.m_properties.m_gridpadding, true, this.m_properties.m_bsquared);
 	}
 
 	toggleGridLayout() {
@@ -504,7 +505,8 @@ export default class CGraphicsGraph extends CGraph {
 				gridsize,
 				this.m_properties.m_gridwidth, 
 				this.m_properties.m_gridcolor, 
-				this.m_properties.m_gridpadding
+				this.m_properties.m_gridpadding,
+				this.m_properties.m_bsquared
 			);
 		}
 		this.drawVertices();

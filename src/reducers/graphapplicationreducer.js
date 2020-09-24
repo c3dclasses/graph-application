@@ -126,6 +126,11 @@ export default function GraphApplicationReducer(state=GraphApplicationState, act
             newstate.m_bprofileshort = action.data;
             cgraphicsgraph.setProperties({m_bprofileshort:newstate.m_bprofileshort});
         break;
+
+        case __.SETSQUARED:
+            newstate.m_bsquared = action.data;
+            cgraphicsgraph.setProperties({m_bsquared:newstate.m_bsquared});     
+        break;
         default:
         break;
     }
