@@ -19,7 +19,7 @@ export default class CGraphicsGraph extends CGraph {
 		this.draw = this.draw.bind(this);
 		this.m_numdrawcalls = 0;
 		this.m_bcreated = false;
-		this.m_version = 6.34;
+		this.m_version = 6.4;
 		this.m_bstoregraph = true;
 		this.m_properties = null;
 		this.loadFromLocalStorage();
@@ -193,7 +193,7 @@ export default class CGraphicsGraph extends CGraph {
 		let edges = this.getEdges();
 		if(edges == null)
 			return null;
-		console.log("go through all the edges")
+	//	console.log("go through all the edges")
 		for(let v1 in edges) {
 			for(let v2 in edges[v1]) {
 				let cgraphedge = edges[v1][v2]; 
@@ -252,12 +252,15 @@ export default class CGraphicsGraph extends CGraph {
 	} // end handleMouseDown()
 	
 	handleMouseUp(e) {
+		if(e.which === 3)
+			return;
 		if(this.m_bmousedown === false)
 			return;
 		let p = this.m_cgraphics.getXYFromClientXY(e.clientX,e.clientY);
 		let cgraphvertex_start = this.getSelectedVertex();
 		let cgraphvertex_end = this.collidePoint2CGraphVertex(p.x,p.y);
 		if(!cgraphvertex_start && !cgraphvertex_end) {
+			console.log("add vertex")
 			this.addVertexAtClientPos(p.x,p.y);
 			this.triggerUpdate();
 		}
@@ -274,27 +277,30 @@ export default class CGraphicsGraph extends CGraph {
 	} // end handleMouseUp()
 	
 	handleMouseMove(e) {
+		if(e.which === 3)
+			return;
 		if(this.m_bmousedown) {
 			let p = this.m_cgraphics.getXYFromClientXY(e.clientX,e.clientY);
 			this.addNewEdgeAtXY(p.x,p.y);
-			//this.drawGraph();
-			//requestAnimationFrame(this.draw);
 			this.drawAnimationFrame();
 		} // end if
 	} // end handleMouseMove()
 	
 	handleContextMenu(e) {
+		console.log("down3")
 		e.preventDefault();
 		let p = this.m_cgraphics.getXYFromClientXY(e.clientX,e.clientY);
-
 		let cgraphvertex = this.collidePoint2CGraphVertex(p.x,p.y);
+		let cgraphedge = null;
+
 		if(cgraphvertex)
 			this.removeVertex(cgraphvertex.getIndex());
-		
-		let cgraphedge = this.collidePoint2CGraphEdge(p.x,p.y);
-		if(cgraphedge)
-			this.removeMultiEdge(cgraphedge.getVertexIndex1(), cgraphedge.getVertexIndex2());
-	
+		else {
+			cgraphedge = this.collidePoint2CGraphEdge(p.x,p.y);
+			if(cgraphedge)
+				this.removeMultiEdge(cgraphedge.getVertexIndex1(), cgraphedge.getVertexIndex2());
+		}
+
 		if(cgraphvertex || cgraphedge) {  
 			this.triggerUpdate();
 			this.drawAnimationFrame();
@@ -555,7 +561,7 @@ export default class CGraphicsGraph extends CGraph {
 		if(vertices)
 			for(let v in vertices)
 				profile.push(vertices[v].getProfile(seqindex));
-		console.log(profile);
+	//	console.log(profile);
 		return profile;
 	}
 
@@ -575,6 +581,8 @@ export default class CGraphicsGraph extends CGraph {
 	
 	
 	handleMouseUp(e) {
+		if(e.which === 3)
+			return;
 		if(this.m_bMouseDown === false)
 			return;
 		let p = this.m_cgraphics.getXYFromClientXY(e.clientX,e.clientY);
