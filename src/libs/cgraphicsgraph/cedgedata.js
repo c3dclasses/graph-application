@@ -31,7 +31,7 @@ export default class CEdgeData {
 export class CNewEdgeDataLine {
 	constructor() { this.init(); } 
 	init() {
-		console.log("CEdgeData.m_maxwidth: " + CEdgeData.m_maxwidth)
+	//	console.log("CEdgeData.m_maxwidth: " + CEdgeData.m_maxwidth)
 
 		this.m_width = 5;
 		this.m_color = "#0000ff";

@@ -121,8 +121,8 @@ class CGraphics {
 	drawGridPoints(rows, cols, w, color, padding) {
 		if(rows <= 0 || cols <= 0)
 			return;
-		console.log(rows, cols, w, color, padding)
-		console.log("draw grid points")
+	//	console.log(rows, cols, w, color, padding)
+	//	console.log("draw grid points")
 		let d = this.getWH();
 		d.w -= padding*2;
 		d.h -= padding*2;
@@ -150,8 +150,8 @@ class CGraphics {
 			cols = rows;
 		if(rows <= 0 || cols <= 0)
 			return;
-		console.log(rows, cols, w, color, padding)
-		console.log("draw grid points")
+	//	console.log(rows, cols, w, color, padding)
+	//	console.log("draw grid points")
 		
 		let d = this.getWH();
 		gridlength = d.w>d.h?d.h-padding:d.w-padding;
@@ -183,10 +183,10 @@ class CGraphics {
 		this.drawLine(x2,y1,x2,y2,w,color); // right side
 		this.m_graphics.setLineDash([]);
 		
-		console.log(d.w,d.h, cols, rows)
+		//console.log(d.w,d.h, cols, rows)
 		cols = Math.ceil(d.w / cols);
 		rows = Math.ceil(d.h / rows);
-		console.log(d.w, d.h, cols, rows)
+		//console.log(d.w, d.h, cols, rows)
 
 		x1 = x1 + cols * 0.5;
 		y1 = y1 + rows * 0.5;

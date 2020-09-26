@@ -16,8 +16,8 @@ export function collidePoint2LineSegment (px, py, x1, y1, x2, y2, buffer) {
 	let d2 = distOfPoints(px, py, x2, y2);  
 	let lineLen = distOfPoints(x1, y1, x2, y2);
 
-	console.log("d1: ", d1, " d2: ", d2, "lineLen: ", lineLen, "d1+d2: ", (d1+d2));
-	console.log("lineLen + buffer: ", (lineLen + buffer), "lineLen - buffer: ", (lineLen - buffer),);
+	//console.log("d1: ", d1, " d2: ", d2, "lineLen: ", lineLen, "d1+d2: ", (d1+d2));
+	//console.log("lineLen + buffer: ", (lineLen + buffer), "lineLen - buffer: ", (lineLen - buffer),);
 
 
 	return (Math.floor(d1+d2)) >= (lineLen-buffer) && (Math.floor(d1+d2)) <= (lineLen+buffer)
@@ -104,7 +104,7 @@ function fetchMoreFromNetworkX(responseParams, subscriber) {
 		fetch(responseapi, options)
 			.then(response=>response.json())
 			.then(response=>{
-				console.log("response: ", response);
+			//	console.log("response: ", response);
 				if(_setTimeoutID > -1)
 					clearInterval(_setTimeoutID);
 				

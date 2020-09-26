@@ -199,8 +199,8 @@ class CGraph {
 			for(var v2 in edges[v1])
 				if(edges[v1][v2].isMultiEdge())
 					str.push([v1,v2].join(delimiter1));
-		console.log(edges);
-		console.log(str);
+	//	console.log(edges);
+	//	console.log(str);
 		return str.join(delimiter2);
 	}
 }

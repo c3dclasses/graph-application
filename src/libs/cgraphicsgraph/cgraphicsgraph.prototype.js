@@ -84,11 +84,11 @@ CGraphics.prototype.drawGrid = function(rows, cols, w, color, padding) {
 CGraphics.prototype.drawGridPoints = function(rows, cols, w, color, padding) {
 	if(rows <= 0 || cols <= 0)
 		return;
-	console.log(rows, cols);
+	//console.log(rows, cols);
 	w = 3;
 	color = "black";
 	padding = 0;
-	console.log("draw grid points")
+	//console.log("draw grid points")
 	let d = this.getWH();
 	d.w -= padding*2;
 	d.h -= padding*2;
