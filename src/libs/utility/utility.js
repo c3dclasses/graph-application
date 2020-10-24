@@ -5,22 +5,47 @@ export function delayFunctionCall(fn,ms) {  return function() { setTimeout(fn,ms
 export function getRandomNumber(min, max) { return Math.random() * (max - min) + min; } 
 
 export function collidePoint2Circle(px, py, cx, cy, cr) {
-	let dx = px - cx;
-	let dy = py - cy;
+	let dx = px-cx;
+	let dy = py-cy;
 	let d = Math.sqrt((dx*dx) + (dy*dy));
-	return (d <= cr);
+	let dist = cr-d;
+	return (d > cr) ? null : { 
+		dist:dist, 
+		pos:{x:dx,y:dy},
+		dir:{x:(dx != 0) ? dx/d : 0, y:(dy != 0) ? dy/d : 0}
+	}
 } // end collidePoint2Circle()
 
-export function collidePoint2LineSegment (px, py, x1, y1, x2, y2, buffer) {
-	let d1 = distOfPoints(px, py, x1, y1);
-	let d2 = distOfPoints(px, py, x2, y2);  
-	let lineLen = distOfPoints(x1, y1, x2, y2);
+export function collidePoint2LineSegment (px, py, x1, y1, x2, y2, linewidth) {
+	//let d1 = distOfPoints(px, py, x1, y1);
+	//let d2 = distOfPoints(px, py, x2, y2);  
+	//let lineLen = distOfPoints(x1, y1, x2, y2);
 
-	//console.log("d1: ", d1, " d2: ", d2, "lineLen: ", lineLen, "d1+d2: ", (d1+d2));
-	//console.log("lineLen + buffer: ", (lineLen + buffer), "lineLen - buffer: ", (lineLen - buffer),);
+	let dist = distOfPoints(px, py, x1, y1) + distOfPoints(px, py, x2, y2) - distOfPoints(x1, y1, x2, y2);
+	let cx = px - x2;
+	let cy = py - y2;
+	let minDistThreshold = 0.0;
+	let maxDistThreshold = 0.05;
 
+	let distFromCenter = distOfPoints(px,py,cx,cy); 
 
-	return (Math.floor(d1+d2)) >= (lineLen-buffer) && (Math.floor(d1+d2)) <= (lineLen+buffer)
+	console.log("dist:", dist);
+	console.log("cx, cy:", cx, cy);
+	console.log("distFromCenter:", distFromCenter)
+	
+	return (minDistThreshold <= dist && dist <= maxDistThreshold) ? {
+		dist:dist,
+		pos:{x:cx,y:cy} 
+	} : null;
+
+	//buffer = 0.5;
+
+	//console.log("compare")
+	//console.log("d1+d2:", d1+d2);
+	//console.log("lineLen:", lineLen);
+	//console.log("diff:", d1+d2 - lineLen);
+	//console.log("")
+	//return (Math.floor(d1+d2)) <= Math.floor(lineLen))
 } // end collidePoint2LineSegment()
 
 export function distOfPoints(x1, y1, x2, y2) { 

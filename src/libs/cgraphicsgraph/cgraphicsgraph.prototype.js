@@ -1,6 +1,7 @@
 import CGraphicsGraph, { handleCGraphicsGraphUpdate } from "./cgraphicsgraph";
 import CGraphics from "../cgraphics/cgraphics";
 
+/*
 const prevInitDefaults = CGraphicsGraph.prototype.initDefaults;
 CGraphicsGraph.prototype.initDefaults = function() {
 	this.prevInitDefaults.call(this);
@@ -25,6 +26,7 @@ CGraphicsGraph.prototype.setGridColumns = function(cols) {
 	this.drawAnimationFrame();
 }*/
 
+/*
 CGraphicsGraph.prototype.getGridCellPosFromPos = function(p) {		
 	return this.m_cgraphics.getGridRowColPosFromPos(p.x, p.y, 
 		this.m_properties.m_ngridrows, this.m_properties.m_ngridcols, this.m_properties.m_gridpadding, true);
@@ -361,7 +363,8 @@ CGraphicsGraph.prototype.handleMouseUp = function(e) {
 } // end handleMouseUp()
 */
 
-CGraphicsGraph.prototype.layoutVerticesInCircle = function() {
+/*
+CGraphicsGraph.prototype.layoutVerticesInCircl = function() {
 	let d = this.m_cgraphics.getWH();
 	let vertices = this.getVertices();
 	if(vertices == null)
@@ -403,7 +406,8 @@ handleCGraphicsGraphUpdate (function(cgraph) { cgraph.computeVertexProfiles(); }
 
 /*
 CGraphicsGraph.prototype.doER = function(n, p) {}
-*/
+
 
 CGraphicsGraph.m_instance = CGraphicsGraph.m_instance || new CGraphicsGraph();
 export const CGraphicsGraphInstance = CGraphicsGraph.m_instance;
+*/

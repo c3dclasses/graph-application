@@ -1,7 +1,14 @@
 import CGraphVertex from "../cgraph/cgraphvertex";
-import { median } from "../utility/utility";
+import { 
+	median, 
+	collidePoint2Circle, 
+} from "../utility/utility";
 
 // functions to attach to the CGraphVertex objects
+CGraphVertex.prototype.collide = function(x, y) { return this.getData().collide(x,y); }
+
+CGraphVertex.prototype.setSelected = function(bselected) { this.getData().setSelected(bselected); }
+
 CGraphVertex.prototype.draw = function(cgraphics) {
 	let label = [];
 	let data = this.getData();
@@ -14,7 +21,6 @@ CGraphVertex.prototype.draw = function(cgraphics) {
 	else if(this.m_cgraph.m_properties.m_vlabeltype === "numbers") 
 		label.push(di); // just use the index
 	
-
 	if(this.m_cgraph.m_properties.m_vprofiletype && this.m_profiles) {
 		for(let id in this.m_cgraph.m_properties.m_vprofiletype) {
 			label.push("" + this.m_profiles[id]);

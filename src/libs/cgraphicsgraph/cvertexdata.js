@@ -1,4 +1,8 @@
 import {CGraphicsGraphInstance as cggi} from "./cgraphicsgraph";
+import { 
+	median, 
+	collidePoint2Circle, 
+} from "../utility/utility";
 
 export default class CVertexData {
 	constructor(params=null) { 
@@ -19,6 +23,7 @@ export default class CVertexData {
 		this.setSelStrokeColor("#ff0000");
 		this.setFontType("Arial");
 		this.setFontSize(12);
+		this.setSelected(false);
 	} // end init()
 
 	loadParams(initparams) {
@@ -39,6 +44,7 @@ export default class CVertexData {
 	setLabel(label) { this.m_label = label;}
 	setFontType(fontType) { this.m_fontType = fontType;}
 	setFontSize(fontSize) { this.m_fontSize = fontSize;}
+	setSelected(bselected) { this.m_bselected = bselected; }
 
 	restorePos(w,h) {
 		this.m_x = this.m_ox;
@@ -77,7 +83,31 @@ export default class CVertexData {
 	getRadius() { return (cggi && cggi.m_properties.m_busevradius) ? cggi.m_properties.m_vradius : this.m_r; }
 
 	draw(cgraphics) { 
-		cgraphics.drawCircle(this.m_x, this.m_y, this.getRadius(), this.m_bgColor, this.m_stkColor);
+		let color = this.m_bselected ? "green" :  this.m_stkColor;
+		cgraphics.drawCircle(this.m_x, this.m_y, this.getRadius(), this.m_bgColor, color, 4);
 		cgraphics.drawText(this.m_x, this.m_y, this.m_label, this.m_fgColor, this.m_bgColor, this.m_fontSize, this.m_fontType, "", "");
 	} // end draw()
+
+	collide(x,y) { 
+		var data = collidePoint2Circle(x, y, this.m_x, this.m_y, this.getRadius());
+		return data;
+	}
 } // end CVertexData
+
+
+export class CNewVertexSize {
+	constructor() { this.init(); } 
+	init() {
+		this.setColor("#0000ff");
+		this.setPos(0,0);
+		this.setRadius(5);
+	} // end init()
+	setRadius(radius) { this.m_radius = radius; }
+	getRadius(){ return this.m_radius; }
+	setPos(x,y) { this.m_x = x; this.m_y = y; }
+	setColor(color) { this.m_color = color; }
+	draw(cgraphics) {
+		cgraphics.drawCircle(this.m_x, this.m_y, this.m_radius, this.m_color, this.m_color);//this.m_x, this.m_y, this.m_radius, this.m_color, this.m_color); 
+		return;
+	} // end draw()
+}

@@ -78,12 +78,12 @@ class CGraphics {
 		this.m_graphics.globalAlpha = 1.0;
 	} // end clear 
 	
-	drawCircle(x, y, radius, color, stkcolor) { 
+	drawCircle(x, y, radius, color, stkcolor, stkthickness) { 
 		this.m_graphics.beginPath();
 		this.m_graphics.arc(x, y, radius, 0, 2 * Math.PI, false);
 		this.m_graphics.fillStyle = color;
 		this.m_graphics.fill();
-		this.m_graphics.lineWidth = 1;
+		this.m_graphics.lineWidth = stkthickness;
 		this.m_graphics.strokeStyle = stkcolor;
 		this.m_graphics.stroke();
 	} 
@@ -262,6 +262,10 @@ class CGraphics {
 			y += h*0.5;
 		}
 		return {x:x,y:y};
+	}
+
+	setCursor(name) {
+		this.m_canvas.style.cursor = name;
 	}
 	
 

@@ -31,15 +31,13 @@ export default class CEdgeData {
 export class CNewEdgeDataLine {
 	constructor() { this.init(); } 
 	init() {
-	//	console.log("CEdgeData.m_maxwidth: " + CEdgeData.m_maxwidth)
-
 		this.m_width = 5;
 		this.m_color = "#0000ff";
 		this.setEndPos(0,0);
 		this.setStartPos(0,0);
 	} // end init()
-	setColor(color){this.m_color = color; }
-	setWidth(width){this.m_width = width; }
+	setColor(color) { this.m_color = color; }
+	setWidth(width) { this.m_width = width; }
 	setStartPos(x,y) { this.m_sx = x; this.m_sy = y; }
 	setEndPos(x,y) { this.m_ex = x; this.m_ey = y; }
 	draw(cgraphics) {
@@ -48,3 +46,4 @@ export class CNewEdgeDataLine {
 		return;
 	} // end draw()
 } // end CNewEdgeDataLine
+
