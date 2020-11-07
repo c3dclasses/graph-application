@@ -13,6 +13,10 @@ export default function App(){
     useEffect(()=>{ 
         dispatch(__.init(document.getElementById("graph")));
         handleCGraphicsGraphUpdate(function(){dispatch(__.updateProfileSequences());});
+        setTimeout(function(){
+            
+        },5000)
+
     },[]);
 
     return (
