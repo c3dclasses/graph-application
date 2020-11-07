@@ -14,18 +14,26 @@ export default class CEdgeData {
 		this.m_width=w; 
 		CEdgeData.m_minwidth = Math.min(CEdgeData.m_minwidth, this.m_width);
 		CEdgeData.m_maxwidth = Math.max(CEdgeData.m_maxwidth, this.m_width);
+		this.setSelected(false);
 	} 
 
 	loadParams(initparams) {
 		let _this = this;
 		for(let param in initparams)
 			_this[param] = initparams[param];
+		this.setSelected(false);
 	}
 
+	setSelected(bselected) { this.m_bselected = bselected; }
 	setColor(color) { this.m_color = color; }
 	setWidth(width) { this.m_width = width; }
 	setLabel(label) { this.m_label = label; }
 	getWidth() { return (cggi && cggi.m_properties.m_buseewidth) ? cggi.m_properties.m_ewidth : this.m_width; }
+	draw(cgraphics, x1,y1,x2,y2) {
+		let color = this.m_bselected ? "green" : this.m_color
+
+		cgraphics.drawLine(x1, y1, x2, y2, this.getWidth(), color);
+	}
 } // end CEdgeData
 
 export class CNewEdgeDataLine {

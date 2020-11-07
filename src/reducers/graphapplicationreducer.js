@@ -9,6 +9,10 @@ export default function GraphApplicationReducer(state=GraphApplicationState, act
         case __.INIT:
             newstate = initGraphApplication(action.data, newstate);
         break;
+
+        case __.INIT_COMPLETE:
+        break
+
         case __.LAYOUT:
             cgraphicsgraph.layoutVerticesInCircle();
         break;

@@ -21,6 +21,10 @@ export default class CGraphicsGraph extends CGraph {
 		this.m_bcreated = false;
 		this.m_bmousedown = false;
 		this.m_mousedown_coldata = null;
+		this.m_onmousedownvertex = null;
+		this.m_selectedvertex = null;
+		this.m_onmousedownedge = null;
+		this.m_selectededge = null;
 		this.m_version = 6.9;
 		this.m_bstoregraph = true;
 		this.m_properties = null;
@@ -41,6 +45,7 @@ export default class CGraphicsGraph extends CGraph {
 		this.disableMouseUp();
 		this.initEventHandlers();
 		this.triggerUpdate();
+		this.triggerCreate();
 		this.m_bcreated = true;
 		return true;
 	}
@@ -136,7 +141,7 @@ export default class CGraphicsGraph extends CGraph {
 
 	enableMouseDown(x,y) {
 		this.enableSelectedVertex(x,y);
-		//this.enableSelectedEdge(x,y);
+		this.enableSelectedEdge(x,y);
 	} // end enableSelection()
 
 	enableSelectedVertex(x,y) {
@@ -159,8 +164,8 @@ export default class CGraphicsGraph extends CGraph {
 			this.m_selectededge = null;
 		}
 
-		let coldata = this.collidePoint2CGraphVertex(x,y);
-		this.m_selectededge = this.m_onmousedownedge = (coldata) ? coldata.m_selectededge : null;
+		let coldata = this.collidePoint2CGraphEdge(x,y);
+		this.m_selectededge = this.m_onmousedownedge = (coldata) ? coldata.cgraphedge : null;
 		this.m_mousedown_coldata = coldata;
 		this.m_bmousedown = true;
 		if(this.m_selectededge)
@@ -169,6 +174,7 @@ export default class CGraphicsGraph extends CGraph {
 
 	disableMouseUp() {
 		this.m_onmousedownvertex = null;
+		this.m_onmousedownedge = null;
 		this.m_bmousedown = false;
 		this.m_mousedown_coldata = null;
 	} // end disableSelection()
@@ -239,7 +245,6 @@ export default class CGraphicsGraph extends CGraph {
 		let edges = this.getEdges();
 		if(edges == null)
 			return null;
-	//	console.log("go through all the edges")
 		for(let v1 in edges) {
 			for(let v2 in edges[v1]) {
 				let cgraphedge = edges[v1][v2]; 
@@ -248,8 +253,12 @@ export default class CGraphicsGraph extends CGraph {
 				let edata = cgraphedge.getData();
 				let vdata1 = cgraphedge.getCGraphVertex1().getData();
 				let vdata2 = cgraphedge.getCGraphVertex2().getData();
-				if(collidePoint2LineSegment(x, y, vdata1.m_x, vdata1.m_y, vdata2.m_x, vdata2.m_y, edata.getWidth()))
-					return cgraphedge;
+				let coldata = cgraphedge.collide(x,y);
+				//if(collidePoint2LineSegment(x, y, vdata1.m_x, vdata1.m_y, vdata2.m_x, vdata2.m_y, edata.getWidth()))
+				if(coldata) {
+					coldata.cgraphedge = cgraphedge;
+					return coldata;
+				}
 			} // end for
 		} // end for
 		return null;
@@ -311,7 +320,13 @@ export default class CGraphicsGraph extends CGraph {
 		
 		// create new vertex at pos
 		
-		let bColAtEdge = (this.m_mousedown_coldata && this.m_mousedown_coldata.dist < 3 && this.m_mousedown_coldata.dist > 0);
+		let bColAtEdge = (
+			this.m_mousedown_coldata && 
+			(this.m_mousedown_coldata.dist < 3 && this.m_mousedown_coldata.dist > 0) | 
+			(this.m_mousedown_coldata.dist < 0.5 && this.m_mousedown_coldata.dist > 0) 					
+		);
+
+		
 		console.log("on mousedown: ", this.m_mousedown_coldata)
 		
 		if(bColAtEdge){}
@@ -346,9 +361,16 @@ export default class CGraphicsGraph extends CGraph {
 		if(e.which === 3)
 			return;
 		let p = this.m_cgraphics.getXYFromClientXY(e.clientX,e.clientY);
-		let coldata = (this.m_selectedvertex) ? this.m_selectedvertex.collide(p.x, p.y) : null;
+		
+		let coldata = null;
+		if(this.m_selectedvertex)
+			coldata = this.m_selectedvertex.collide(p.x, p.y);
+		else if(this.m_selectededge)
+			coldata = this.m_selectededge.collide(p.x, p.y);
+		
+		
 		this.handleCursorChange(coldata);
-
+	
 		let bColAtEdge = (this.m_mousedown_coldata && this.m_mousedown_coldata.dist < 3 && this.m_mousedown_coldata.dist > 0)
 		if(this.m_bmousedown) {
 			let p = this.m_cgraphics.getXYFromClientXY(e.clientX,e.clientY);
@@ -362,19 +384,31 @@ export default class CGraphicsGraph extends CGraph {
 	
 	handleCursorChange(coldata) {
 		if(!coldata) {
+			console.log("no mouse over selected")
 			this.m_cgraphics.setCursor("default");	
 			return false;
 		} // end if
 		 
+		console.log("mouse over selected")
 		let dx = coldata.dir.x;
 		let dy = coldata.dir.y;
 		let dist = coldata.dist;
-		if(dist < 3 && dist > 0) {
+		let type = coldata.type;
+
+		
+		if(type === "point-to-circle" && dist < 3 && dist > 0) {
 			if((dx > 0 && dy > 0) || (dx < 0 && dy < 0))
 				this.m_cgraphics.setCursor("se-resize");
 			else this.m_cgraphics.setCursor("ne-resize");
 			return true;
 		}
+		else if(type === "point-to-line" && dist < 0.5 && dist > 0) {
+			if((dx > 0 && dy > 0) || (dx < 0 && dy < 0))
+				this.m_cgraphics.setCursor("se-resize");
+			else this.m_cgraphics.setCursor("ne-resize");
+			return true;
+		}
+
 		this.m_cgraphics.setCursor("all-scroll"); 
 		return false;
 	} // end handleCursorChange()
@@ -385,15 +419,16 @@ export default class CGraphicsGraph extends CGraph {
 		let p = this.m_cgraphics.getXYFromClientXY(e.clientX,e.clientY);
 		let coldata = this.collidePoint2CGraphVertex(p.x,p.y);
 		let cgraphvertex = (coldata) ? coldata.cgraphvertex : null;
-		
 		let cgraphedge = null;
-
+		
 		if(cgraphvertex)
 			this.removeVertex(cgraphvertex.getIndex());
 		else {
-			cgraphedge = this.collidePoint2CGraphEdge(p.x,p.y);
-			if(cgraphedge)
+			coldata = this.collidePoint2CGraphEdge(p.x,p.y);
+			cgraphedge = (coldata) ? coldata.cgraphedge : null;
+			if(cgraphedge) {
 				this.removeMultiEdge(cgraphedge.getVertexIndex1(), cgraphedge.getVertexIndex2());
+			}
 		}
 
 		if(cgraphvertex || cgraphedge) {  
@@ -468,6 +503,8 @@ export default class CGraphicsGraph extends CGraph {
 	}
 
 	saveScreenshot() { this.m_cgraphics.saveScreenshot(); }
+
+	triggerCreate() { triggerEvent("cgraphicsgraph.create", this); }
 
 	triggerUpdate() { triggerEvent("cgraphicsgraph.update", this); }
 	

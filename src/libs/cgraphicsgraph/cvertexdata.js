@@ -30,6 +30,7 @@ export default class CVertexData {
 		let _this = this;
 		for(let param in initparams)
 			_this[param] = initparams[param];
+		this.setSelected(false);
 	}
 
 	setPos(x,y) { this.m_x = x; this.m_y = y;}	
@@ -83,9 +84,9 @@ export default class CVertexData {
 	getRadius() { return (cggi && cggi.m_properties.m_busevradius) ? cggi.m_properties.m_vradius : this.m_r; }
 
 	draw(cgraphics) { 
-		let color = this.m_bselected ? "green" :  this.m_stkColor;
-		cgraphics.drawCircle(this.m_x, this.m_y, this.getRadius(), this.m_bgColor, color, 4);
-		cgraphics.drawText(this.m_x, this.m_y, this.m_label, this.m_fgColor, this.m_bgColor, this.m_fontSize, this.m_fontType, "", "");
+		let color = this.m_bselected ? "green" :  this.m_bgColor;
+		cgraphics.drawCircle(this.m_x, this.m_y, this.getRadius(), color, this.m_stkColor, 4);
+		cgraphics.drawText(this.m_x, this.m_y, this.m_label, this.m_fgColor, color, this.m_fontSize, this.m_fontType, "", "");
 	} // end draw()
 
 	collide(x,y) { 

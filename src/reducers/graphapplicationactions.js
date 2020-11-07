@@ -4,6 +4,7 @@ class GraphApplicationActions {
     // constants
     constructor() {
         this.INIT = 0;
+        this.INIT_COMPLETE = 0;
         this.CLEAR = 0;
         this.LAYOUT = 0;
         this.TOGGLEGRID = 0;
@@ -38,6 +39,7 @@ class GraphApplicationActions {
     
     // functions
     init(cgraph) { return { type: this.INIT, data:cgraph }; }
+    initComplete() { return { type: this.INIT_COMPLETE }; }
     clear() { return {type: this.CLEAR }; }
     layout() { return { type: this.LAYOUT }; }
     saveScreenshot() { return { type: this.SCREENSHOT }; }
@@ -57,15 +59,6 @@ class GraphApplicationActions {
     updateProfileSequences() { return { type: this.UPDATEPROFILESEQUENCES }; }
     setShortProfile(bshort) { return {type: this.SETSHORTPROFILE, data:bshort } }
     setSquared(bsquared) {return { type: this.SETSQUARED, data:bsquared } }
-    /*
-    setProfileType(profiletype) { return { type: this.PROFILETYPE, data:profiletype }; }
-    getProperties() { return { type: this.GETPROPERTIES } }
-    setProperties(vertices, edges, type) { return { type: this.SETPROPERTIES, data:{ vertices, edges, type } } }
-    getProfile() { return { type: this.GETPROFILE } }
-    setShortProfile(bshort) { return {type: this.SETSHORTPROFILE, data:bshort } }
-    setShowProfile(index,bshow) { return { type: this.SETSHOWPROFILE, data:{index, bshow } }; }
-    showLoadSpinner(bshowspinner) { return { type: this.SHOWLOADSPINNER, data:bshowspinner }; }
-    */
 }
 
 export const GraphApplicationActionsInstance = GraphApplicationActions.m_instance;

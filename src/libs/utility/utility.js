@@ -10,6 +10,7 @@ export function collidePoint2Circle(px, py, cx, cy, cr) {
 	let d = Math.sqrt((dx*dx) + (dy*dy));
 	let dist = cr-d;
 	return (d > cr) ? null : { 
+		type: "point-to-circle",
 		dist:dist, 
 		pos:{x:dx,y:dy},
 		dir:{x:(dx != 0) ? dx/d : 0, y:(dy != 0) ? dy/d : 0}
@@ -20,7 +21,9 @@ export function collidePoint2LineSegment (px, py, x1, y1, x2, y2, linewidth) {
 	//let d1 = distOfPoints(px, py, x1, y1);
 	//let d2 = distOfPoints(px, py, x2, y2);  
 	//let lineLen = distOfPoints(x1, y1, x2, y2);
-
+	let dx = x1-x2;
+	let dy = y1-y2;
+	let d = distOfPoints(x1, y1, x2, y2);
 	let dist = distOfPoints(px, py, x1, y1) + distOfPoints(px, py, x2, y2) - distOfPoints(x1, y1, x2, y2);
 	let cx = px - x2;
 	let cy = py - y2;
@@ -34,8 +37,10 @@ export function collidePoint2LineSegment (px, py, x1, y1, x2, y2, linewidth) {
 	console.log("distFromCenter:", distFromCenter)
 	
 	return (minDistThreshold <= dist && dist <= maxDistThreshold) ? {
+		type: "point-to-line",
 		dist:dist,
-		pos:{x:cx,y:cy} 
+		pos:{x:cx,y:cy},
+		dir:{x:(dx != 0) ? dx/d : 0, y:(dy != 0) ? dy/d : 0}
 	} : null;
 
 	//buffer = 0.5;
