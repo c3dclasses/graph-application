@@ -19,14 +19,13 @@ function LeftSidebar() {
                 <button onClick={()=>{dispatch(__.toggleLeftSidebar())}} className="btn btn-default btn-sm"><span className={iconClasses}></span></button>
             </div>        
             <div className="leftsidebarcontent">
-                {/*
-                <SidebarSection headerName="Graph Properties">
-                    <GraphVertexAndEdgeProperties />
-                </SidebarSection>
-                */}
                 <SidebarSection headerName="Profile Sequences">
                     <GraphProfileProperties />
                 </SidebarSection>
+                <SidebarSection headerName="Graph Properties">
+                    <GraphVertexAndEdgeProperties />
+                </SidebarSection>
+                
             </div>
         </aside>
     );

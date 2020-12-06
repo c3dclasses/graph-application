@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useDispatch } from "react-redux";
-import { GraphApplicationActionsInstance as gaa } from "../../reducers/graphapplicationactions";
+import { GraphApplicationActionsInstance as __ } from "../../reducers/graphapplicationactions";
 import { fetchFromNetworkX } from '../../libs/utility/utility';
 
-export function ErdorRenyi() {
+export function ErdorsRenyi() {
     const dispatch = useDispatch();
     const [_state, _setState] = useState({
         m_vertexcount: 0,
@@ -17,11 +17,40 @@ export function ErdorRenyi() {
         const {name, value, type, checked} = e.target; 
         if(type === "checkbox") _setState({..._state,[name]:checked});
         else _setState({..._state,[name]:value});
-    }
+    } // end handleChange()
 
     function handleClick(e) {  
-       dispatch(gaa.showLoadSpinner(true));
-       let currequest = null;
+        const input = {
+            function_name:_state.m_function,
+            function_params: {
+                n:_state.m_vertexcount,
+                p:_state.m_probability
+            }
+        } // end input
+
+        //dispatch(__.showLoadSpinner(true));
+        let call_obj = null;
+        fetchFromNetworkX(input).subscribe({
+            next(call_obj) {
+                console.log("SUCCESS: Sent the request to NetworkX: " + JSON.stringify(call_obj)); 
+            }, // end next()
+            complete() {
+                console.log("SUCCESS: NetworkX is done with the request: " + JSON.stringify(call_obj));  
+                dispatch(__.showLoadSpinner(false));
+            }, // end complete()
+            error(error) {
+                console.log("FAILURE: Could not send the request to NetworkX: " + JSON.stringify(error) + " Request: " + JSON.stringify(call_obj));
+                dispatch(__.showLoadSpinner(false));
+            } // end error()
+        }); // end fetchFromNetwork()
+    } // end handleClick()
+
+    
+        //n = _state.m_vertexcount;
+        //p = 
+        //dispatch(__.showLoadSpinner(true));
+        // let currequest = null;
+        /*
        fetchFromNetworkX(_state).subscribe({
             next(request) { 
                 currequest = request;
@@ -30,14 +59,14 @@ export function ErdorRenyi() {
             },
             complete() { 
 //console.log("SUCCESS: NetworkX is done with the request: " + JSON.stringify(currequest));  
-                dispatch(gaa.showLoadSpinner(false));
+                dispatch(__.showLoadSpinner(false));
             },
             error(error) { 
                // console.log("FAILURE: Could not send the request to NetworkX: " + JSON.stringify(error) + " Request: " + JSON.stringify(_state));
-                dispatch(gaa.showLoadSpinner(false));
+                dispatch(__.showLoadSpinner(false));
             }
         });
-    }
+        */
 
     return (
     <div className="erdos-renyi">

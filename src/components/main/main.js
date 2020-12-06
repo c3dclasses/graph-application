@@ -9,7 +9,7 @@ export default function Main() {
         <main>
             <LeftSidebar/>
             <Content />
-            {/*<RightSidebar />*/}
+            <RightSidebar />
         </main>
     );
 }

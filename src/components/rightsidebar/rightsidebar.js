@@ -1,6 +1,6 @@
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 import SidebarSection from "../sidebarsection/sidebarsection";
-//import {ErdorRenyi} from "../erdosrenyi/erdosrenyi";
+import { ErdorsRenyi } from "../erdosrenyi/erdosrenyi";
 import { useSelector, useDispatch } from 'react-redux';
 import { GraphApplicationActionsInstance as __ } from "../../reducers/graphapplicationactions";
 import "./rightsidebar.css";
@@ -19,7 +19,7 @@ function RightSidebar(props) {
             <div className="rightsidebarcontent">
                 <SidebarSection className="er" headerName="Erdős–Rényi">
                     {
-                    /*<ErdorRenyi />*/
+                    <ErdorsRenyi />
                     }
                 </SidebarSection>
             </div>
