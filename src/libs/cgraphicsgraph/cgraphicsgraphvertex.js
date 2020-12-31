@@ -4,7 +4,30 @@ import {
 	collidePoint2Circle, 
 } from "../utility/utility";
 
+/*
 // functions to attach to the CGraphVertex objects
+CGraphVertex.profileDistribution = null;
+CGraphVertex.getProfileDistribution = function() {
+	return CGraphVertex.profileDistribution;
+} // end profileDistribution()
+
+CGraphVertex.resetProfileDistributionCount = function() {
+	CGraphVertex.profileDistribution = {};
+} // end resetProfileDistributionCount()
+
+CGraphVertex.tallyProfileDistributionCount = function(profiletype, profilenum) {
+	let pd = CGraphVertex.profileDistribution;
+	if(!pd[profiletype])
+		pd[profiletype] = {}
+	if(!pd[profiletype][profilenum])
+		pd[profiletype][profilenum] = 0
+	pd[profiletype][profilenum] += 1
+} // end tallyProfileDistributionCount()
+*/
+
+
+window.CGraphVertex = CGraphVertex;
+
 CGraphVertex.prototype.collide = function(x, y) { return this.getData().collide(x,y); }
 
 CGraphVertex.prototype.setSelected = function(bselected) { this.getData().setSelected(bselected); }
@@ -102,15 +125,6 @@ CGraphVertex.prototype.computeProfile = function() {
 	ndegfreq.sort(function(a,b) {return b - a;});
 	//console.log("ndegfreq2:", ndegfreq);
 	let ifreq = (ndegfreq.length>0) ? ndegfreq[0] : 0;
-	
-	/*
-	this.m_profiles.push(efre);
-	this.m_profiles.push(ifre);
-	this.m_profiles.push(idiv);
-	this.m_profiles.push(ediv);
-	this.m_profiles.push(imed);
-	this.m_profiles.push(emed);
-	*/
 
 	this.m_profiles.push(ifreq);
 	this.m_profiles.push(efreq);
@@ -121,6 +135,26 @@ CGraphVertex.prototype.computeProfile = function() {
 	this.m_profiles.push(imax-imin);
 	this.m_profiles.push(emax-emin);
 	this.m_profiles.push(deg-eavg);
+/*
+	CGraphVertex.tallyProfileDistributionCount("deg", deg);
+	CGraphVertex.tallyProfileDistributionCount("imin", imin);
+	CGraphVertex.tallyProfileDistributionCount("emin", emin);
+	CGraphVertex.tallyProfileDistributionCount("imax", imax);
+	CGraphVertex.tallyProfileDistributionCount("emax", emax);
+	CGraphVertex.tallyProfileDistributionCount("isum", isum);
+	CGraphVertex.tallyProfileDistributionCount("esum", esum);
+	CGraphVertex.tallyProfileDistributionCount("iavg", iavg);
+	CGraphVertex.tallyProfileDistributionCount("eavg", eavg);
+	CGraphVertex.tallyProfileDistributionCount("ifreq", ifreq);
+	CGraphVertex.tallyProfileDistributionCount("efreq", efreq);
+	CGraphVertex.tallyProfileDistributionCount("idiv", idiv);
+	CGraphVertex.tallyProfileDistributionCount("ediv", ediv);
+	CGraphVertex.tallyProfileDistributionCount("imed", imed);
+	CGraphVertex.tallyProfileDistributionCount("emed", emed);
+	CGraphVertex.tallyProfileDistributionCount("iran", imax-imin);
+	CGraphVertex.tallyProfileDistributionCount("eran", emax-emin);
+	CGraphVertex.tallyProfileDistributionCount("eran", deg-eavg);
+*/
 	return;
 }
 

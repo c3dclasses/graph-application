@@ -11,6 +11,7 @@ import "./cgraphicsgraphvertex";
 import "./cgraphicsgraphedge";
 import CEdgeData, {CNewEdgeDataLine} from "./cedgedata";
 import CVertexData, {CNewVertexSize} from "./cvertexdata";
+import CGraphVertex from "../cgraph/cgraphvertex";
 
 export default class CGraphicsGraph extends CGraph {
 	static m_instance = CGraphicsGraph.m_instance || new CGraphicsGraph();
@@ -56,6 +57,7 @@ export default class CGraphicsGraph extends CGraph {
 				m_bgcolor: "#e6e6e6",
 				m_vlabeltype: "letters",
 				m_vprofiletype: {},
+				m_vprofiletype2: {},
 				m_vradius: 15,
 				m_ewidth: 10,
 				m_busevradius: false,
@@ -296,7 +298,7 @@ export default class CGraphicsGraph extends CGraph {
 		handleCGraphicsGraphUpdate(this.handleUpdate.bind(this));
 	} // end initEventHandlers()
 
-	handleResize(ow,oh,nw,nh) {
+	handleResize(ow, oh, nw, nh) {
 		this.repositionVertices(ow, oh, nw, nh); 
 		this.drawAnimationFrame();
 	}
@@ -547,6 +549,8 @@ export default class CGraphicsGraph extends CGraph {
 	//////////////////////////////////////////
 	// adding and removing vertices and edges
 	loadFromGraphData(vdata, edata) {
+		this.m_vertices = {};
+		this.m_edges = {};
 		if(!vdata)
 			return false;
 		if(!vdata[0].length === 0)	// no vertices
@@ -687,6 +691,7 @@ export default class CGraphicsGraph extends CGraph {
 	
 	computeVertexProfiles() {
 		let vertices = this.getVertices();
+	//	CGraphVertex.resetProfileDistributionCount();
 		if(vertices)
 			for(let v in vertices)
 				vertices[v].computeProfile();

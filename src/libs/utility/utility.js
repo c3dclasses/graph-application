@@ -1,5 +1,9 @@
 import { Observable } from 'rxjs';
 
+import AbortController from "abort-controller"
+
+export const abortcontroller = new AbortController()
+
 export function delayFunctionCall(fn,ms) {  return function() { setTimeout(fn,ms); }  } 
 
 export function getRandomNumber(min, max) { return Math.random() * (max - min) + min; } 
@@ -88,66 +92,77 @@ export function median(values) {
     return (values.length % 2)  ? values[half] : (values[half-1] + values[half]) / 2.0;
 }
 
-export function fetchFromNetworkX(requestParams) {
-	const requestapi = "http://kevlewis.com/rest/graphapplication/networkx/request.php";     
-	const options = {
-		method: 'POST',
-		header: {
-			'Accept': 'application/json',
-			'Content-type': 'aaplication/json'
-		},
-		body: JSON.stringify(requestParams)
-	};
-	const observable = new Observable(subscriber => {
-		fetch(requestapi, options)
-			.then(response=>response.json())
-			.then(request=>{
-				// send the request object
-				if(request.m_berror === true) {
-					subscriber.error(request);
-					subscriber.complete();
-					return;
-				}
-				subscriber.next(request);
-				fetchMoreFromNetworkX(request, subscriber);			
-			})
-			.catch(error=>{
-				subscriber.error(error); // delivers an error if it caught one
-			});
-	});
-	return observable;
-} // fetchFromNetworkX()
-
-function fetchMoreFromNetworkX(responseParams, subscriber) {
-	const responseapi = "http://kevlewis.com/rest/graphapplication/networkx/response.php";
+//-----------------------------------------------------------
+// name: fetchFromNetworkX()
+// desc: makes a call to networkx
+//-----------------------------------------------------------
+export function fetchFromNetworkX(input) {
+	const requestapi = "http://www.kevlewis.com/projects/nx/nx-set-call-input.php";     
 	const options = {
 		method: 'POST',
 		header: {
 			'Accept': 'application/json',
 			'Content-type': 'application/json'
 		},
-		body: JSON.stringify(responseParams)
-	}; // end options
+		signal: abortcontroller.signal,
+		body: JSON.stringify(input)
+	};
+	const observable = new Observable(subscriber => {
+		fetch(requestapi, options)
+			.then(response=>response.json())
+			.then(call_obj=>{
+				// send the request object
+				if(call_obj.error === true) {
+					subscriber.error(call_obj);
+					subscriber.complete();
+					return;
+				}
+				subscriber.next(call_obj);
+				fetchMoreFromNetworkX(call_obj, subscriber);			
+			}) //end then()
+			.catch(error=>{
+				subscriber.error(error); // delivers an error if it caught one
+			}); // end catch()
+	}); // end  new Observable()
+	return observable;
+} // fetchFromNetworkX()
 
+
+//-----------------------------------------------------------
+// name: fetchMoreFromNetworkX()
+// desc: makes more networkx calls
+//-----------------------------------------------------------
+function fetchMoreFromNetworkX(call_obj, subscriber) {
+	const responseapi = "http://www.kevlewis.com/projects/nx/nx-get-call-output.php";
+	const options = {
+		method: 'POST',
+		header: {
+			'Accept': 'application/json',
+			'Content-type': 'application/json'
+		},
+		signal: abortcontroller.signal,
+		body: JSON.stringify({"uid":call_obj.uid})
+	}; // end options
+	
 	let _setTimeoutID = -1;
+	let _setTimeoutLimit = 1000;
 	function fetchMore() {
 		fetch(responseapi, options)
 			.then(response=>response.json())
-			.then(response=>{
-			//	console.log("response: ", response);
+			.then(call_obj=>{
 				if(_setTimeoutID > -1)
 					clearInterval(_setTimeoutID);
-				
-				if(response && response.m_percentage===100) {
+				if(call_obj && call_obj.status.percentage===100) {
+					subscriber.next(call_obj);
 					subscriber.complete();
 				}
-				else if(response.m_berror) {
-					subscriber.error(response.error);
+				else if(call_obj.status.error) {
+					subscriber.error(call_obj);
 					subscriber.complete();
 				}
 				else {
-					subscriber.next(response);
-					_setTimeoutID = setTimeout(fetchMore, 5000);
+					subscriber.next(call_obj);
+					_setTimeoutID = setTimeout(fetchMore, _setTimeoutLimit); // call fetch more in 5 more seconds
 				}
 			}) // end then
 			.catch(error=>{
@@ -160,4 +175,5 @@ function fetchMoreFromNetworkX(responseParams, subscriber) {
 	
 	// call the fetch more function
 	fetchMore();
+
 } // fetchMoreFromNetworkX()

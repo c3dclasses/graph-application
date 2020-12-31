@@ -9,8 +9,7 @@ import "./leftsidebar.css";
 function LeftSidebar() {
     const bclose = useSelector(state=>state.m_bleftsidebar);
     const dispatch = useDispatch();
-    useEffect(()=>{ window.dispatchEvent(new Event("resize"));}, [bclose]);
-    useEffect(()=>{ window.dispatchEvent(new Event("resize"));}, [bclose]);
+    useEffect(()=>{window.dispatchEvent(new Event("resize"));}, [bclose]);
     let iconClasses = (bclose) ? "glyphicon glyphicon-chevron-right" : "glyphicon glyphicon-chevron-left";
     let leftsidebarClasses = (bclose) ? "leftsidebarclose" : "";     
     return (

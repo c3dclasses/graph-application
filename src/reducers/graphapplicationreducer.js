@@ -44,6 +44,14 @@ export default function GraphApplicationReducer(state=GraphApplicationState, act
             cgraphicsgraph.setProperties({m_vprofiletype:newstate.m_vprofiletype});
             //newstate.m_vprofiletype[action.data] = action.data;
         break;
+        
+        case __.PROFILETYPE2:
+            newstate.m_vprofiletype2 = {...newstate.m_vprofiletype2};
+            if(action.data.checked)
+                newstate.m_vprofiletype2[action.data.id] = action.data.checked;
+            else delete newstate.m_vprofiletype2[action.data.id];
+            cgraphicsgraph.setProperties({m_vprofiletype2:newstate.m_vprofiletype2});
+        break;
 
         case __.TOGGLEHEADER:
             if(cgraphicsgraph) {
@@ -135,6 +143,15 @@ export default function GraphApplicationReducer(state=GraphApplicationState, act
             newstate.m_bsquared = action.data;
             cgraphicsgraph.setProperties({m_bsquared:newstate.m_bsquared});     
         break;
+
+        case __.SETLOADSPINNER:
+            newstate.m_loadspinnermsg = action.data.msg;
+            newstate.m_bshowloadspinner = action.data.bshow; 
+        break;
+
+        case __.SETCHARTS:
+            newstate.m_bshowcharts = action.data.bshow;
+            newstate.m_charts = action.data.charts;
         default:
         break;
     }

@@ -1,6 +1,7 @@
 import React from "react";
 import {useSelector} from "react-redux";
 import "./loadspinner.css";
+import {abortcontroller} from "../../libs/utility/utility";
 
 export function LoadSpinner() {
     const bshowloadspinner = useSelector(state=>state.m_bshowloadspinner);
@@ -11,11 +12,23 @@ export function LoadSpinner() {
         <div className={`load-spinner-container ${bshow}`}>
             <div className="load-spinner"></div>
             <div className="load-spinner-message">{loadspinnermsg}</div>
+            {
+                !berror && 
+                <div className="load-spinner-action">
+                    <button onClick={()=>{
+                        //abortcontroller.abort();
+                    }}>
+                        <span className="glyphicon glyphicon-stop"></span> Cancel Action
+                    </button>
+                </div>  
+            }
             { 
-                berror && <div className="load-spinner-action">
-                <button onClick={()=>{window.location.reload();}}>
-                <span className="glyphicon glyphicon-refresh"></span> Try Again
-                </button></div> 
+                berror && 
+                <div className="load-spinner-action">
+                    <button onClick={()=>{window.location.reload();}}>
+                        <span className="glyphicon glyphicon-refresh"></span> Try Again
+                    </button>
+                </div> 
             }
         </div>
     );

@@ -2,6 +2,7 @@ import { ProfileSequences } from "../libs/cgraphicsgraph/cgraphicsgraphvertex";
 
 const GraphApplicationState = {
    m_profilesequences: ProfileSequences,
+   m_bshowcharts: false,
    m_bheader: true,
    m_bleftsidebar: true,
    m_brightsidebar: true,

@@ -117,9 +117,6 @@ export default function GraphOperations() {
                 </button>
                 </> : (<></>)
                 }
-                 <button name="ER"  title="grid" onClick={()=>{alert("Run ER example")}} type="button" className="btn btn-default btn-sm" aria-label="Left Align">
-                    <span name="ER" aria-hidden="true">ER</span>
-                </button>
             </div>
             }
         </div>

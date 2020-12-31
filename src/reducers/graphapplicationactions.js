@@ -1,3 +1,5 @@
+import { CGraphicsGraphInstance } from "../libs/cgraphicsgraph/cgraphicsgraph";
+
 class GraphApplicationActions {
     static m_instance = GraphApplicationActions.instance || new GraphApplicationActions();
     
@@ -28,6 +30,10 @@ class GraphApplicationActions {
         this.RESTOREPOSITION = 0;
         this.UPDATEPROFILESEQUENCES = 0;
         this.SETSQUARED = 0;
+        this.SETLOADSPINNER = 0;
+        this.SETNODESANDEDGES = 0;
+        this.SETCHARTS = 0;
+        this.PROFILETYPE2 = 0;
         
         // assign a value
         let i = 0;
@@ -45,6 +51,7 @@ class GraphApplicationActions {
     saveScreenshot() { return { type: this.SCREENSHOT }; }
     setLabelType(vlabeltype) { return { type: this.LABELTYPE, data:vlabeltype }; }
     setProfileType(vprofiletype) { return { type: this.PROFILETYPE, data:vprofiletype }; }
+    setProfileType2(vprofiletype2) { return { type: this.PROFILETYPE2, data:vprofiletype2 }; }
     toggleHeader() {return { type: this.TOGGLEHEADER } }
     toggleLeftSidebar() { return { type: this.TOGGLELEFTSIDEBAR } }
     toggleRightSidebar() {return { type: this.TOGGLERIGHTSIDEBAR } }
@@ -59,6 +66,13 @@ class GraphApplicationActions {
     updateProfileSequences() { return { type: this.UPDATEPROFILESEQUENCES }; }
     setShortProfile(bshort) { return {type: this.SETSHORTPROFILE, data:bshort } }
     setSquared(bsquared) {return { type: this.SETSQUARED, data:bsquared } }
+    setLoadSpinner(bshow, msg){ return { type: this.SETLOADSPINNER, data:{ bshow, msg } }; }
+    setNodesAndEdges(nodes, edges){ 
+        if(CGraphicsGraphInstance)
+            CGraphicsGraphInstance.loadFromGraphData(nodes, edges); 
+    } 
+
+    setCharts(bshow, charts) { return { type: this.SETCHARTS, data: { bshow, charts } } }
 }
 
 export const GraphApplicationActionsInstance = GraphApplicationActions.m_instance;
