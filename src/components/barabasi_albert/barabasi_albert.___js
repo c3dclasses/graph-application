@@ -2,21 +2,26 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { GraphApplicationActionsInstance as __ } from "../../reducers/graphapplicationactions";
 import { fetchFromNetworkX } from '../../libs/utility/utility';
-//import "./erdosrenyi.css";
+import "./erdosrenyi.css";
 
-export function BarabasiAlbert() {
+export function ErdorsRenyi() {
 
     const vprofiletype = useSelector(state=>state.m_vprofiletype2);
     const profilesequences = useSelector(state=>state.m_profilesequences);
   
     const dispatch = useDispatch();
     const [_state, _setState] = useState({
-        m_n: 1,
-        m_m: 1,
+        m_vertexcount: 1,
+        m_probability: 0.5,
+        m_probability2: 1.0,
+        m_probabilitystep: 0.3,
         m_bshowcharts: false,
-        m_function: "barabasi-albert",
-        m_t: 1,
+        m_bpoverx: false,
+        m_function: "erdos-renyi",
+        m_trails: 1,
         m_requestid: -1,
+        m_maxsequencelength: false,
+        m_maxvertexcount: false
     });
 
     function handleChange(e) {
@@ -29,12 +34,17 @@ export function BarabasiAlbert() {
         const input = {
             function_name:_state.m_function,
             function_params: {
-                n:_state.m_n,
-                m:_state.m_m,
-                t:_state.m_t,
+                n:_state.m_vertexcount,
+                p:_state.m_probability,
+                p2:_state.m_probability2,
+                pstep:_state.m_probabilitystep,
+                t:_state.m_trails,
                 bcharts: _state.m_bshowcharts,
+                bpoverx: _state.m_bpoverx,
                 vprofiletype: vprofiletype,
-             } // end function_params
+                maxsequencelength: _state.m_maxsequencelength,
+                maxvertexcount: _state.m_maxvertexcount
+            } // end function_params
         } // end input
 
         dispatch(__.setLoadSpinner(true, "Making NetworkX Call Please wait.........."));
