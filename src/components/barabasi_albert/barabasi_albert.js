@@ -2,26 +2,19 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { GraphApplicationActionsInstance as __ } from "../../reducers/graphapplicationactions";
 import { fetchFromNetworkX } from '../../libs/utility/utility';
-import "./erdosrenyi.css";
+import "./barabasi_albert.css";
 
-export function ErdorsRenyi() {
-
+export function BarabasiAlbert() {
     const vprofiletype = useSelector(state=>state.m_vprofiletype2);
     const profilesequences = useSelector(state=>state.m_profilesequences);
-  
     const dispatch = useDispatch();
     const [_state, _setState] = useState({
-        m_vertexcount: 1,
-        m_probability: 0.5,
-        m_probability2: 1.0,
-        m_probabilitystep: 0.3,
+        m_n: 1,
+        m_m: 1,
         m_bshowcharts: false,
-        m_bpoverx: false,
-        m_function: "erdos-renyi",
-        m_trails: 1,
+        m_function: "barabasi-albert",
+        m_t: 1,
         m_requestid: -1,
-        m_maxsequencelength: false,
-        m_maxvertexcount: false
     });
 
     function handleChange(e) {
@@ -34,18 +27,15 @@ export function ErdorsRenyi() {
         const input = {
             function_name:_state.m_function,
             function_params: {
-                n:_state.m_vertexcount,
-                p:_state.m_probability,
-                p2:_state.m_probability2,
-                pstep:_state.m_probabilitystep,
-                t:_state.m_trails,
+                n:_state.m_n,
+                m:_state.m_m,
+                t:_state.m_t,
                 bcharts: _state.m_bshowcharts,
-                bpoverx: _state.m_bpoverx,
                 vprofiletype: vprofiletype,
-                maxsequencelength: _state.m_maxsequencelength,
-                maxvertexcount: _state.m_maxvertexcount
             } // end function_params
         } // end input
+
+        //alert(JSON.stringify(input));
 
         dispatch(__.setLoadSpinner(true, "Making NetworkX Call Please wait.........."));
         let this_call_obj = null;
@@ -70,67 +60,34 @@ export function ErdorsRenyi() {
     } // end handleClick()
 
     return (
-    <div className="erdos-renyi">
-        <div className="vertices input-group input-group-sm">
+    <div className="barabasi-albert">
+        <div className="n input-group input-group-sm">
             <span className="input-group-addon" id="vertices">n</span>
             <input 
                 onChange={handleChange} 
                 type="number" 
                 className="form-control" 
-                name="m_vertexcount"
+                name="m_n"
                 min="1" 
-                value={_state.m_vertexcount} 
+                value={_state.m_n} 
                 max="10000" 
                 placeholder="Enter Number of Vertices" 
-                aria-describedby="vertices" 
+                aria-describedby="n" 
             /> 
         </div>
 
-        <div className="probability input-group input-group-sm">
-            <span className="input-group-addon" id="probability">p{(_state.m_bshowcharts &&  _state.m_bpoverx)?"1":""}</span>
+        <div className="m input-group input-group-sm">
+            <span className="input-group-addon" id="m">m</span>
             <input onChange={handleChange} 
                 type="number" 
                 className="form-control" 
-                name="m_probability" 
-                min="0" 
-                max="1" 
-                step="0.05"
-                value={_state.m_probability} 
-                placeholder="Probability" 
+                name="m_m" 
+                min="1" 
+                max="10000" 
+                value={_state.m_m} 
+                placeholder="Enter number of Edges" 
             />  
         </div>       
-
-        {(_state.m_bshowcharts && _state.m_bpoverx) &&
-        <div className="probability input-group input-group-sm">
-            <span className="input-group-addon" id="probability">p2</span>
-            <input onChange={handleChange} 
-                type="number" 
-                className="form-control" 
-                name="m_probability2" 
-                min="0" 
-                max="1" 
-                step="0.05"
-                value={_state.m_probability2} 
-                placeholder="Probability2" 
-            />  
-        </div> 
-        }      
-
-        {(_state.m_bshowcharts && _state.m_bpoverx) &&
-        <div className="probability input-group input-group-sm">
-            <span className="input-group-addon" id="probability">pstep</span>
-            <input onChange={handleChange} 
-                type="number" 
-                className="form-control" 
-                name="m_probabilitystep" 
-                min="0" 
-                max="1" 
-                step="0.05"
-                value={_state.m_probabilitystep} 
-                placeholder="Probabilitystep" 
-            />  
-        </div>       
-        }
 
         {_state.m_bshowcharts &&
         <div className="trails input-group input-group-sm">
@@ -139,12 +96,12 @@ export function ErdorsRenyi() {
                 onChange={handleChange} 
                 type="number" 
                 className="form-control" 
-                name="m_trails"
+                name="m_t"
                 min="1" 
-                value={_state.m_trails} 
+                value={_state.m_t} 
                 max="10000" 
                 placeholder="Enter Number of Trails" 
-                aria-describedby="trails" 
+                aria-describedby="t" 
             /> 
         </div>
         }
@@ -174,38 +131,7 @@ export function ErdorsRenyi() {
             </ul>
         </div>
         }
-        {(_state.m_bshowcharts) &&<br />}
-        {(_state.m_bshowcharts) &&
-        <div className="btn-group btn-group-poverx-type">
-            <button className="btn-profile-type btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <b>P Over X</b> <span className="caret"></span>
-            </button>
-            <ul className="dropdown-menu">
-                <li className="profile" key="m_maxsequencelength">                                
-                        <input 
-                            type="checkbox" 
-                            value="m_maxsequencelength" 
-                            checked={_state.m_maxsequencelength}
-                            name="m_maxsequencelength" 
-                            onChange={handleChange}
-                        />
-                        <span>max sequence length</span>
-                </li>
-                <li className="profile" key="m_maxvertexcount">                                
-                        <input 
-                            type="checkbox" 
-                            value="m_maxvertexcount" 
-                            checked={_state.m_maxvertexcount}
-                            name="m_maxvertexcount" 
-                            onChange={handleChange}
-                        />
-                        <span>max vertex count</span>
-                </li>
-            </ul>
-        </div>
-        }
 
-        
         <div className="show-charts">
             <label className="" id="show-charts">Show Charts:</label>&nbsp; 
             <input 
@@ -214,17 +140,6 @@ export function ErdorsRenyi() {
                 name="m_bshowcharts" 
                 checked={_state.m_bshowcharts}
                 aria-describedby="trails" 
-            />
-        </div>
-
-        <div className="p-over-x">
-            <label className="" id="show-charts">P as X-axis:</label>&nbsp; 
-            <input 
-                onChange={handleChange} 
-                type="checkbox" 
-                name="m_bpoverx" 
-                checked={_state.m_bpoverx}
-                aria-describedby="p over x" 
             />
         </div>
 

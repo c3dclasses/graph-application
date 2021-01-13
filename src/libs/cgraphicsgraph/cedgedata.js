@@ -5,7 +5,7 @@ export default class CEdgeData {
 	static m_maxwidth = 0;
 	
 	constructor(params=null) { 
-		this.initParams(params || {c:"#ff0000", w:5, label:""});
+		this.initParams(params || {c:"#ff0000", w:3, label:""});
 	}
 	
 	initParams({w,c,label}) {
@@ -28,7 +28,7 @@ export default class CEdgeData {
 	setColor(color) { this.m_color = color; }
 	setWidth(width) { this.m_width = width; }
 	setLabel(label) { this.m_label = label; }
-	getWidth() { return (cggi && cggi.m_properties.m_buseewidth) ? cggi.m_properties.m_ewidth : this.m_width; }
+	getWidth() { return 5; }// (cggi && cggi.m_properties.m_buseewidth) ? cggi.m_properties.m_ewidth : this.m_width; }
 	draw(cgraphics, x1,y1,x2,y2) {
 		let color = this.m_bselected ? "green" : this.m_color
 
@@ -39,7 +39,7 @@ export default class CEdgeData {
 export class CNewEdgeDataLine {
 	constructor() { this.init(); } 
 	init() {
-		this.m_width = 5;
+		this.m_width = 3;
 		this.m_color = "#0000ff";
 		this.setEndPos(0,0);
 		this.setStartPos(0,0);

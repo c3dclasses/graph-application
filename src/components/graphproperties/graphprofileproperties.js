@@ -67,7 +67,6 @@ function toJSXSequence(seqinfo, bshort) {
         let key = sequence[i]+"";
         if(isNaN(key))
             key="NaN";
-
         if(!short[key]) 
             short[key]=0;
         short[key]++;

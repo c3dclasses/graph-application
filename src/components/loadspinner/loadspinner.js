@@ -10,13 +10,13 @@ export function LoadSpinner() {
     let bshow = (bshowloadspinner) ? "show-spinner" : "";
     return (
         <div className={`load-spinner-container ${bshow}`}>
-            <div className="load-spinner"></div>
             <div className="load-spinner-message">{loadspinnermsg}</div>
+            <div className="load-spinner"></div>
             {
                 !berror && 
                 <div className="load-spinner-action">
                     <button onClick={()=>{
-                        //abortcontroller.abort();
+                        abortcontroller.abort();
                     }}>
                         <span className="glyphicon glyphicon-stop"></span> Cancel Action
                     </button>

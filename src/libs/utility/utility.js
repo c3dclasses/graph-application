@@ -1,8 +1,23 @@
 import { Observable } from 'rxjs';
 
-import AbortController from "abort-controller"
+import AbortController from "abort-controller";
 
-export const abortcontroller = new AbortController()
+class AbortControllerInstance {
+	constructor() { 	
+		this.m_abortcontroller = new AbortController();
+	}
+
+	getSignal(){
+		return this.m_abortcontroller.signal;
+	}
+
+	abort() {
+		this.m_abortcontroller.abort();
+		this.m_abortcontroller = new AbortController();
+	}
+}
+
+export const abortcontroller = new AbortControllerInstance();
 
 export function delayFunctionCall(fn,ms) {  return function() { setTimeout(fn,ms); }  } 
 
@@ -104,7 +119,7 @@ export function fetchFromNetworkX(input) {
 			'Accept': 'application/json',
 			'Content-type': 'application/json'
 		},
-		signal: abortcontroller.signal,
+		signal: abortcontroller.getSignal(),
 		body: JSON.stringify(input)
 	};
 	const observable = new Observable(subscriber => {
@@ -140,7 +155,7 @@ function fetchMoreFromNetworkX(call_obj, subscriber) {
 			'Accept': 'application/json',
 			'Content-type': 'application/json'
 		},
-		signal: abortcontroller.signal,
+		signal: abortcontroller.getSignal(),
 		body: JSON.stringify({"uid":call_obj.uid})
 	}; // end options
 	

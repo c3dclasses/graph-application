@@ -3,6 +3,7 @@ import {
 	median, 
 	collidePoint2Circle, 
 } from "../utility/utility";
+import { maxHeaderSize } from "http";
 
 /*
 // functions to attach to the CGraphVertex objects
@@ -57,6 +58,23 @@ CGraphVertex.prototype.draw = function(cgraphics) {
 	data.draw(cgraphics);
 } // end draw()
 
+const arrAvg = arr => arr.reduce((a,b) => a + b, 0) / arr.length;
+
+function freq(degfreq) {
+	let freqdeg = [];
+	let max = -1;
+	for(let deg in degfreq)
+		if(degfreq[deg] > max) {
+			max = degfreq[deg];
+			freqdeg = [parseInt(deg)];
+		}
+		else if(degfreq[deg] == max)
+			freqdeg.push(parseInt(deg))
+	if(max == -1)
+		return 0;
+	return (freqdeg.length > 1) ? arrAvg(freqdeg) : freqdeg[0];
+}
+
 // computes the profile of the vertex 
 CGraphVertex.prototype.computeProfile = function() { 
 	let edges = this.getEdges();
@@ -108,7 +126,7 @@ CGraphVertex.prototype.computeProfile = function() {
 	let ediv = ndegrees.length;
 	let emed = median(degrees);
 	ndegfreq.sort(function(a,b) {return b - a;});
-	let efreq =  (ndegfreq.length>0) ? ndegfreq[0] : 0;
+	let efreq =  freq(degtypes);//(ndegfreq.length>0) ? ndegfreq[0] : 0;
 	
 	//console.log("ndegfreq1:", ndegfreq);
 
@@ -124,7 +142,10 @@ CGraphVertex.prototype.computeProfile = function() {
 
 	ndegfreq.sort(function(a,b) {return b - a;});
 	//console.log("ndegfreq2:", ndegfreq);
-	let ifreq = (ndegfreq.length>0) ? ndegfreq[0] : 0;
+	
+	//let ifreq = (ndegfreq.length>0) ? ndegfreq[0] : 0;
+	let ifreq =  freq(degtypes);//(ndegfreq.length>0) ? ndegfreq[0] : 0;
+	
 
 	this.m_profiles.push(ifreq);
 	this.m_profiles.push(efreq);

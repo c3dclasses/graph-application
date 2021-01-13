@@ -11,3 +11,14 @@
 .sidebar .sidebarsection:nth-child(odd) {
     border-bottom: 1px solid #bbb;
 }
+
+
+.toggle-sidebarsectioncontent-btn {
+    border: 0;
+    margin-left: 10px;
+}
+
+
+.sidebarsectioncontent {
+    /*height: 0px;*/
+}

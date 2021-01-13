@@ -59,7 +59,7 @@ export default class CGraphicsGraph extends CGraph {
 				m_vprofiletype: {},
 				m_vprofiletype2: {},
 				m_vradius: 15,
-				m_ewidth: 10,
+				m_ewidth: 3,
 				m_busevradius: false,
 				m_buseewidth: true,
 				m_props: null,
@@ -703,7 +703,7 @@ export default class CGraphicsGraph extends CGraph {
 		if(vertices)
 			for(let v in vertices)
 				profile.push(vertices[v].getProfile(seqindex));
-	//	console.log(profile);
+		console.log("getProfileSequences:",seqindex, profile);
 		return profile;
 	}
 

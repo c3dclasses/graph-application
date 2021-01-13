@@ -74,26 +74,43 @@ export default function Charts() {
         return plots;
     } // end getPlots()
 
+    function isFloat(n) {
+        return n === +n && n !== (n|0);
+    }
 
     //--------------------------------------------------
     // name: getPlot()
     // desc: returns the plot for a profile
     //--------------------------------------------------
     function getPlot(histogram) {
-        let x = [];
-        let y = [];
+        let x = Object.keys(histogram._sum);
+        let y = [];//Object.values(histogram._sum);
         let n = charts.n;
         let t = charts.t;
-
-        for(let i=0; i<n; i++) {
-            x.push(i)
-            y.push(histogram._sum[i] ? (histogram._sum[i]/t) : 0)
-        } // end for
+        if(t<0)
+            return;
+        
+        console.log("sum:", histogram._sum)
+        x.sort(function(a, b){return parseFloat(a) - parseFloat(b)});    
+        //if(x[0] > n || x[x.length-1] > n || isFloat(x[0])) {
+        //    alert("sum")
+        for(let i=0; i<x.length; i++){
+            //alert(x[i]);
+            y.push(histogram._sum[x[i]]/t)
+        }
+        /*
+        else {
+            x=[];
+            for(let i=0; i<n; i++) {
+                x.push(i)
+                y.push(histogram._sum[i] ? (histogram._sum[i]/t) : 0)
+            } // end for
+        }*/
 
         return {
             x, 
             y, 
-            line: {shape: 'spline', width: 8},
+            line: {shape: 'spline', width: 2},
             name: `${histogram._name}`,
         } // end return
     } // end getPlot()
@@ -156,7 +173,7 @@ export default function Charts() {
         return {
             x, 
             y, 
-            line: {shape: 'spline', width: 8},
+            line: {shape: 'spline', width: 2},
             name: `${profile_name}`,
         } // end return
     } // end getPlot()
@@ -176,17 +193,23 @@ export default function Charts() {
         let n = charts.n;
         let t = charts.t; 
         let p = charts.p;
+        let m = charts.m;
+        let name = charts.name;
         let p1 = p;
         let p2 = charts.p2;
         let pstep = charts.pstep;
         let params = (!charts.bpoverx) ? `<b>n</b>=${n}, <b>p</b>=${p}, <b>t</b>=${t}` : 
                     `<b>n</b>=${n}, <b>p1</b>=${p1}, <b>p2</b>=${p2}, <b>pstep</b>=${pstep}, <b>t</b>=${t}`;
+
+        if(name==="barabasi-albert")
+            params = `<b>n</b>=${n}, <b>m</b>=${m}, <b>t</b>=${t}`;
+
         let xlabel = (!charts.bpoverx) ? "degree" : "probability";
         let ylabel = (!charts.bpoverx) ? "count" : "max-count";
 
         // set up the layout
         let layout = getLayout(
-            `<b>Erdos-Renyi</b><br />${params}`,
+            `<b>${name}</b><br />${params}`,
             `<b>${xlabel}</b>`,
             `<b>count</b>`
         ) // end getLayout()
